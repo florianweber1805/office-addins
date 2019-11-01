@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabric-react/lib/Styling';
 import { Stack } from 'office-ui-fabric-react';
-import { FontIcon } from 'office-ui-fabric-react/lib/Icon';
+import { Icon } from 'office-ui-fabric-react/lib/Icon';
 import { List } from 'office-ui-fabric-react';
 
 const theme: ITheme = getTheme();
@@ -21,20 +21,18 @@ const actionStyles: MioListItemActionClasses = mergeStyleSets({
     cell: [
         getFocusStyle(theme, { inset: -1 }),
         {
-            minHeight: 54,
-            padding: 10,
+            width: 48,
+            height: 48,
             boxSizing: 'border-box',
-            borderBottom: `1px solid ${semanticColors.bodyDivider}`,
-            display: 'flex',
+            border: `1px solid ${semanticColors.bodyDivider}`,
             selectors: {
                 '&:hover': { background: palette.neutralLight },
             },
         },
     ],
     icon: {
-        fontSize: 14,
-        width: 30,
-        height: 30,
+        width: 48,
+        height: 48,
     },
 })
 
@@ -42,17 +40,35 @@ export class MioListItemAction extends React.Component<MioListItemActionProps> {
 
     private text: string;
     private icon: string;
+    private hovered: boolean;
 
     constructor(props: MioListItemActionProps) {
         super(props);
         this.text = props.text;
         this.icon = props.icon;
+        this.hovered = false;
     }
 
     render(): JSX.Element {
         return (
-            <FontIcon iconName={this.icon} className={actionStyles.icon}>{this.text}</FontIcon>
+            <span onMouseEnter={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => this.mouseenter(event)} 
+            onMouseLeave={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => this.mouseenter(event)}
+            className={actionStyles.cell}>
+                <div>{this.text + (this.hovered ? ' hovered' : '')}</div>
+                <Icon iconName={this.icon} className={actionStyles.icon} />
+            </span>
         );
+    }
+
+    mouseenter(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+        this.hovered = true;
+
+        event.stopPropagation();
+    }
+
+    mouseleave(event: React.MouseEvent<HTMLDivElement, MouseEvent>){
+        this.hovered = false;
+        event.stopPropagation();
     }
 
 }
@@ -68,13 +84,13 @@ export interface MioListItemProps {
 export interface MioListItemClasses {
     cell: string;
     containerStack: string;
-    topStack: string;
+    leftStack: string;
     primaryText: string;
     secondaryText: string;
     tertiaryText: string;
     metaText: string;
+    rightStack: string;
     actionStack: string;
-    action: string;
 }
 
 const itemStyles: MioListItemClasses = mergeStyleSets({
@@ -83,7 +99,7 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
         {
             width: '100%',
             minHeight: 54,
-            padding: 10,
+            padding: 5,
             boxSizing: 'border-box',
             borderBottom: `1px solid ${semanticColors.bodyDivider}`,
             display: 'flex',
@@ -97,7 +113,7 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
         display: 'flex',
         flexDirection: 'row'
     },
-    topStack: {
+    leftStack: {
         alignItems: 'flex-start',
         display: 'flex',
         justifyContent: 'space-between',
@@ -115,14 +131,17 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
     metaText: {
         fontSize: 12
     },
+    rightStack: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        alignSelf: 'flex-end',
+    },
     actionStack: {
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'flex-end',
-        flexWrap: 'wrap-reverse',
-    },
-    action: {
-        
+        justifyContent: 'space-evenly',
+        alignSelf: 'flex-end',
     },
 });
 
@@ -147,23 +166,38 @@ export class MioListItem extends React.Component<MioListItemProps> {
         return (
             <div draggable={true} className={itemStyles.cell}>
                 <Stack className={itemStyles.containerStack}>
-                    <Stack className={itemStyles.topStack}>
+                    <Stack className={itemStyles.leftStack}>
                         <Stack.Item><span className={itemStyles.primaryText}>{this.primaryText}</span></Stack.Item>
                         <Stack.Item><span className={itemStyles.secondaryText}>{this.secondaryText}</span></Stack.Item>
                         <Stack.Item><span className={itemStyles.tertiaryText}>{this.tertiaryText}</span></Stack.Item>
-                        <Stack.Item><span className={itemStyles.metaText}>{this.metaText}</span></Stack.Item>
                     </Stack>
-                    <Stack className={itemStyles.actionStack}>
+                    <Stack className={itemStyles.rightStack}>
                         <Stack.Item><List items={this.actions}></List></Stack.Item>
+                        <Stack className={itemStyles.actionStack}>
+                            {/* <List items={this.actions} onRenderCell={(item: MioListItemAction) => this.render_action(item)} /> */}
+                            <MioListItemAction text='test' icon='ChevronUp'></MioListItemAction>
+                            <MioListItemAction text='test' icon='ChevronUp'></MioListItemAction>
+                            <MioListItemAction text='test' icon='ChevronUp'></MioListItemAction>
+                        </Stack>
+                        <Stack.Item className={itemStyles.metaText}>{this.metaText}</Stack.Item>
                     </Stack>
                 </Stack>
             </div>
         );
     }
 
-    render_action(): JSX.Element {
+    // render_actions(): JSX.Element {
+    //     return Array.apply(null, Array(this.actions.length)).map((action: MioListItemAction) => {
+    //         return (
+    //             <MioListItemAction text={action.props.text} icon={action.props.icon} />
+    //         );
+    //     });
+        
+    // }
+
+    render_action(item: MioListItemAction): JSX.Element {
         return (
-            <div>{'lol'}</div>
+            <Stack.Item><MioListItemAction text={item.props.text} icon={item.props.icon}></MioListItemAction></Stack.Item>
         );
     }
 
