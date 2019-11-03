@@ -1,65 +1,94 @@
 import * as React from "react";
-import { DefaultButton, PrimaryButton, Stack, IStackItemStyles } from 'office-ui-fabric-react';
+import { DefaultButton, PrimaryButton, Stack, IStackItemStyles, IStackStyles, IStackTokens, IStackItemTokens } from 'office-ui-fabric-react';
+import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabric-react/lib/Styling';
 import { SearchBox } from 'office-ui-fabric-react/lib/SearchBox';
-import { MioListItem } from '../mioListItem';
+import { MioListItemActionType } from './mioListItemAction';
 import { initializeIcons } from '@uifabric/icons';
+import { MioList, consoleClear } from "./mioList";
 initializeIcons();
 
-const stackStyles: IStackItemStyles = {
-  root: {
-    alignItems: 'flex-start',
-    display: 'flex',
-    justifyContent: 'space-evenly',
-    paddingBottom: '5px',
-  }
+export const theme: ITheme = getTheme();
+export const { palette } = theme;
+
+export interface AppClasses {
+    cell: string;
+    searchBox: string;
+}
+
+const styles: AppClasses = mergeStyleSets({
+    cell: [
+        getFocusStyle(theme, { inset: -1 }),
+        {
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+        },
+    ],
+    searchBox: {
+        width: '100%',
+        selectors: {
+            '&:hover': { background: palette.themeLighterAlt },
+        },
+    }
+})
+
+const ssControl: IStackStyles = {
+    root: { 
+        alignItems: 'flex-start',
+		display: 'flex',
+		justifyContent: 'space-evenly',
+        padding: '5px',
+        flexDirection: 'row',
+    }
 };
 
-const searchBoxStyles: IStackItemStyles = {
-  root: {
-    
-    // alignItems: 'stretch',
-    // display: 'flex',
-    // justifyContent: 'stretch'
-    
-  }
+const ssControlItem: IStackItemStyles = {
+    root: {
+        padding: 2,
+    }
 };
+
+const stControl: IStackTokens = {
+    padding: 2,
+};
+
+const stControlItem: IStackItemTokens = {
+    padding: 2,
+}
 
 export const App: React.FunctionComponent = () => {
-  return (
-
-
-    <Stack padding="5px">
-      <Stack styles={stackStyles} horizontal gap={5}>
-        <Stack.Item grow={3}><SearchBox styles={searchBoxStyles} placeholder="Search" onSearch={newValue => _search(newValue)}></SearchBox></Stack.Item>
-        <Stack.Item shrink={3}><PrimaryButton text="Collapse" onClick={_collapse} allowDisabledFocus /></Stack.Item>
-        <Stack.Item shrink={3}><DefaultButton text="Clear" onClick={_clear} allowDisabledFocus /></Stack.Item>
-      </Stack>
-
-      <MioListItem primaryText='test'></MioListItem>
-      <MioListItem secondaryText='rofl'></MioListItem>
-      <MioListItem primaryText='Category' secondaryText='rofl' tertiaryText='text dsjfhksjdf'></MioListItem>
-      <MioListItem primaryText='Category' metaText='nice' tertiaryText='text dsjfhksjdf' secondaryText='ajfas'
-        actions={Array.apply(null, Array(3)).map((index: number) => {
-          return {
-            text: 'ac' + index,
-            icon: 'CompassNW'
-          };
-        })}
-      ></MioListItem>
-
-    </Stack>
-    
-  );
+	return (
+        <div className={styles.cell}>
+            <Stack styles={ssControl} tokens={stControl}>
+                <Stack.Item grow={5} styles={ssControlItem} tokens={stControlItem}><SearchBox className={styles.searchBox} placeholder="Search" onSearch={newValue => _search(newValue)} /></Stack.Item>
+                <Stack.Item styles={ssControlItem} tokens={stControlItem}><PrimaryButton text="Collapse" onClick={_collapse} allowDisabledFocus /></Stack.Item>
+                <Stack.Item styles={ssControlItem} tokens={stControlItem}><DefaultButton text="Clear" onClick={clearConsole} allowDisabledFocus /></Stack.Item>
+            </Stack>
+            <MioList items={[
+                { primaryText: 'Test 9', secondaryText: 'Alter', tertiaryText: 'Was Geht?', actions: [MioListItemActionType.Edit], items: [
+                    { primaryText: 'lol', tertiaryText: 'Nut', metaText: '###' }
+                ]},
+                { secondaryText: 'ROFL', metaText: 'Lol', items: [
+                    { tertiaryText: 'Blubb!' },
+                    { tertiaryText: 'Blubber!!', items: [
+                        { primaryText: 'EOEO' }
+                    ]}
+                ]}
+            ]} />
+        </div>
+	);
 };
 
 function _search(newValue: string): void {
-  alert('value is ' + newValue);
+	alert('value is ' + newValue);
 }
 
 function _collapse(): void {
-  alert('Collapse!');
+
+	alert('Collapse!');
 }
 
-function _clear(): void {
-  alert('Clear!');
+function clearConsole(): void {
+    consoleClear();
 }

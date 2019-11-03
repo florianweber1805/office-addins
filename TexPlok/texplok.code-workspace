@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "assets"
+		},
+		{
+			"path": "node_modules"
+		},
+		{
+			"path": "src"
+		},
+		{
+			"path": ".vscode"
+		},
+		{
+			"path": "dist"
+		}
+	]
+}
