@@ -24,7 +24,6 @@ const styles: AppClasses = mergeStyleSets({
             height: '100%',
             display: 'flex',
             flexDirection: 'column',
-            maxWidth: '300px',
         },
     ],
     searchBox: {
@@ -69,18 +68,18 @@ export const App: React.FunctionComponent = () => {
                 <Stack.Item shrink={1} styles={ssControlItem} tokens={stControlItem}><DefaultButton text="Clear" onClick={clearConsole} allowDisabledFocus /></Stack.Item>
             </Stack>
             <MioList items={[
-                { primaryText: 'Test 9', secondaryText: 'Alter', tertiaryText: 'Was Geht?', actions: [MioListItemActionType.Edit], items: [
-                    { primaryText: 'lol', tertiaryText: 'Nut', metaText: '###', items: [
-                        { secondaryText: 'ROFL', metaText: 'Lol', items: [
-                            { tertiaryText: 'Blubb!' },
-                            { tertiaryText: 'Blubber!!', items: [
-                                { primaryText: 'EOEO' }
+                { icon: 'DocumentSet', primaryText: 'Antrag', secondaryText: '§A32 Klasse A', tertiaryText: 'mit Anhang C', actions: [MioListItemActionType.Edit], items: [
+                    { primaryText: 'Antrag', tertiaryText: '§A32', metaText: '###', items: [
+                        { secondaryText: 'Klasse A', metaText: 'test', items: [
+                            { tertiaryText: 'Antrag' },
+                            { tertiaryText: 'Anhang C', actions: [MioListItemActionType.Feedback], items: [
+                                { primaryText: 'Zusatz B43' }
                             ]}
                         ]}
                     ] }
                 ]},
                 { secondaryText: 'ROFL', metaText: 'Lol', items: [
-                    { tertiaryText: 'Blubb!' },
+                    { tertiaryText: 'Blubb!', actions: [MioListItemActionType.Delete] },
                     { tertiaryText: 'Blubber!!', items: [
                         { primaryText: 'EOEO' }
                     ]}

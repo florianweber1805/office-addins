@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabric-react/lib/Styling';
-import { Stack, Button } from 'office-ui-fabric-react';
+import { Stack, Button, Icon } from 'office-ui-fabric-react';
 import { MioListItemAction, MioListItemActionType } from './mioListItemAction';
 import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
 import { classnames } from './Helper';
@@ -11,6 +11,7 @@ const theme: ITheme = getTheme();
 const { palette } = theme;
 
 export interface MioListItemProps {
+    icon?: string;
     primaryText?: string;
     secondaryText?: string;
     tertiaryText?: string;
@@ -24,6 +25,7 @@ export interface MioListItemClasses {
     item: string;
     topStack: string;
     leftStack: string;
+    icon: string;
     primaryText: string;
     secondaryText: string;
     tertiaryText: string;
@@ -48,6 +50,7 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
             width: '100%',
             height: '100%',
             borderRadius: 5,
+            boxSizing: 'border-box',
             boxShadow: Depths.depth4,
             margin: 0,
             padding: 0,
@@ -86,15 +89,38 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
         height: '100%',
         display: 'flex',
         flexDirection: 'row',
+        //justifyContent: 'flex-start',
+        justifyContent: 'stretch',
+        alignItems: 'stretch',
         padding: 5,
+        // overflow: 'hidden',
+        // textOverflow: 'ellipsis',
     },
     leftStack: {
+        width: 'available',
+        // width: 'auto',
+        // maxWidth: '65%',
+        //width: '100%',
+        //width: 'auto',
+        // maxWidth: '100%',
+        //background: palette.red,
+        // overflow: 'hidden',
+        // textOverflow: 'ellipsis',
+    },
+    icon: {
+        margin: 0,
+        padding: '5px 5px 5px 0',
+        fontSize: 48,
     },
     primaryText: {
+        //width: '100%',
+        //width: 'available',
         fontSize: 26,
         backgroundColor: palette.themeLighter,
         borderRadius: 5,
         padding: '0 5px 5px 5px',
+        // textOverflow: 'ellipsis',
+        // overflow: 'hidden',
     },
     secondaryText: {
         fontSize: 20,
@@ -110,6 +136,7 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
         margin: 'auto 2px 2px 2px',
     },
     rightStack: {
+        width: '100%',
         display: 'flex',
         flexDirection: 'column',
         marginLeft: 'auto',
@@ -127,18 +154,9 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
     },
 });
 
-interface MioListItemState {
-    primaryText: string;
-    secondaryText: string;
-    tertiaryText: string;
-    metaText: string;
-    actions: MioListItemAction[];
-    items: MioListItem[];
-    expanded: boolean;
-}
+export class MioListItem extends React.Component<MioListItemProps> {
 
-export class MioListItem extends React.Component<MioListItemProps, MioListItemState> {
-
+    private icon: string;
     private primaryText: string;
     private secondaryText: string;
     private tertiaryText: string;
@@ -149,6 +167,7 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
 
     constructor(props: MioListItemProps) {
         super(props);
+        this.icon = props.icon;
         this.primaryText = props.primaryText;
         this.secondaryText = props.secondaryText;
         this.tertiaryText = props.tertiaryText;
@@ -170,28 +189,29 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
                         onClick={() => this.onClick()}
                     >
                         <Stack className={itemStyles.topStack}>
+                            <Stack.Item className={itemStyles.icon}>{this.icon != undefined ? (<Icon iconName={this.icon}></Icon>) : null}</Stack.Item>
                             <Stack className={itemStyles.leftStack}>
                                 <Stack.Item className={classnames(['primaryText', itemStyles.primaryText])}>{this.primaryText}</Stack.Item>
                                 <Stack.Item className={classnames(['secondaryText', itemStyles.secondaryText])}>{this.secondaryText}</Stack.Item>
                                 <Stack.Item className={classnames(['tertiaryText', itemStyles.tertiaryText])}>{this.tertiaryText}</Stack.Item>
                             </Stack>
-                            <Stack.Item className={itemStyles.rightStack}>
+                            <Stack className={itemStyles.rightStack}>
                                 <Stack.Item align='end' className={itemStyles.actionStack}>
                                     {this.actions.map<JSX.Element>(value => {
                                         return value.render();
                                     })}
                                 </Stack.Item>
                                 <Stack.Item align='end' className={classnames(['metaText', itemStyles.metaText])}>{this.metaText}</Stack.Item>
-                            </Stack.Item>
+                            </Stack>
                         </Stack>
                     </Button>
                     {/* {this.expanded ?  */}
                         <Motion 
                             defaultStyle={{x: -10, y: -60, opacity: 0}} 
                             style={{
-                                x: spring((this.expanded ? 0 : -10), presets.wobbly), 
-                                y: spring((this.expanded ? 0 : -60), presets.wobbly), 
-                                opacity: spring((this.expanded ? 1 : 0), presets.wobbly),
+                                x: spring((this.expanded ? 0 : -10), presets.gentle), 
+                                y: spring((this.expanded ? 0 : -60), presets.gentle), 
+                                opacity: spring((this.expanded ? 1 : 0), presets.gentle),
                             }}>
                             {style => (
                                 style.y > -30 ?
