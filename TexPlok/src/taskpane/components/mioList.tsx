@@ -19,14 +19,9 @@ const listStyles: MioListClasses = mergeStyleSets({
     cell: [
         getFocusStyle(theme, { inset: -1 }),
         {
-            width: '100%',
-            height: '100%',
-            borderRadius: 5,
-            //boxSizing: 'border-box',
+            width: 'auto',
+            height: 'auto',
             padding: '0 5px 0 5px',
-            // selectors: {
-            //     '&:hover': { background: palette.themeLighterAlt },
-            // },
         },
     ],
 })

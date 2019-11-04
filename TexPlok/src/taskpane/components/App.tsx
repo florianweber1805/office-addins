@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DefaultButton, PrimaryButton, Stack, IStackItemStyles, IStackStyles, IStackTokens, IStackItemTokens } from 'office-ui-fabric-react';
+import { DefaultButton, PrimaryButton, Stack, IStackItemStyles, IStackTokens, IStackItemTokens } from 'office-ui-fabric-react';
 import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabric-react/lib/Styling';
 import { SearchBox } from 'office-ui-fabric-react/lib/SearchBox';
 import { MioListItemActionType } from './mioListItemAction';
@@ -13,6 +13,7 @@ export const { palette } = theme;
 export interface AppClasses {
     cell: string;
     searchBox: string;
+    controls: string;
 }
 
 const styles: AppClasses = mergeStyleSets({
@@ -23,25 +24,27 @@ const styles: AppClasses = mergeStyleSets({
             height: '100%',
             display: 'flex',
             flexDirection: 'column',
+            maxWidth: '300px',
         },
     ],
     searchBox: {
-        width: '100%',
+        width: 'auto',
         selectors: {
-            '&:hover': { background: palette.themeLighterAlt },
+            // '&:hover': { background: palette.themeLighterAlt },
+            // '&:focus': {
+            //     border: `1px solid ${palette.themePrimary}`,
+            //     background: palette.themeLight,
+            // },
         },
-    }
-})
-
-const ssControl: IStackStyles = {
-    root: { 
+    },
+    controls: {
         alignItems: 'flex-start',
 		display: 'flex',
 		justifyContent: 'space-evenly',
         padding: '5px',
         flexDirection: 'row',
-    }
-};
+    },
+})
 
 const ssControlItem: IStackItemStyles = {
     root: {
@@ -60,14 +63,21 @@ const stControlItem: IStackItemTokens = {
 export const App: React.FunctionComponent = () => {
 	return (
         <div className={styles.cell}>
-            <Stack styles={ssControl} tokens={stControl}>
-                <Stack.Item grow={5} styles={ssControlItem} tokens={stControlItem}><SearchBox className={styles.searchBox} placeholder="Search" onSearch={newValue => _search(newValue)} /></Stack.Item>
-                <Stack.Item styles={ssControlItem} tokens={stControlItem}><PrimaryButton text="Collapse" onClick={_collapse} allowDisabledFocus /></Stack.Item>
-                <Stack.Item styles={ssControlItem} tokens={stControlItem}><DefaultButton text="Clear" onClick={clearConsole} allowDisabledFocus /></Stack.Item>
+            <Stack className={styles.controls} tokens={stControl}>
+                <Stack.Item grow={3} styles={ssControlItem} tokens={stControlItem}><SearchBox className={styles.searchBox} placeholder="Search" onSearch={newValue => _search(newValue)} /></Stack.Item>
+                <Stack.Item shrink={1} styles={ssControlItem} tokens={stControlItem}><PrimaryButton text="Collapse" onClick={_collapse} allowDisabledFocus /></Stack.Item>
+                <Stack.Item shrink={1} styles={ssControlItem} tokens={stControlItem}><DefaultButton text="Clear" onClick={clearConsole} allowDisabledFocus /></Stack.Item>
             </Stack>
             <MioList items={[
                 { primaryText: 'Test 9', secondaryText: 'Alter', tertiaryText: 'Was Geht?', actions: [MioListItemActionType.Edit], items: [
-                    { primaryText: 'lol', tertiaryText: 'Nut', metaText: '###' }
+                    { primaryText: 'lol', tertiaryText: 'Nut', metaText: '###', items: [
+                        { secondaryText: 'ROFL', metaText: 'Lol', items: [
+                            { tertiaryText: 'Blubb!' },
+                            { tertiaryText: 'Blubber!!', items: [
+                                { primaryText: 'EOEO' }
+                            ]}
+                        ]}
+                    ] }
                 ]},
                 { secondaryText: 'ROFL', metaText: 'Lol', items: [
                     { tertiaryText: 'Blubb!' },

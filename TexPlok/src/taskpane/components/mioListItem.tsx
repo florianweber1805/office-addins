@@ -2,9 +2,10 @@ import * as React from 'react';
 import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabric-react/lib/Styling';
 import { Stack, Button } from 'office-ui-fabric-react';
 import { MioListItemAction, MioListItemActionType } from './mioListItemAction';
-import { consoleLog } from './mioList';
-//import { redraw } from '..';
+import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
 import { classnames } from './Helper';
+import { redraw } from '..';
+import { Motion, spring, presets } from 'react-motion'
 
 const theme: ITheme = getTheme();
 const { palette } = theme;
@@ -37,60 +38,63 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
     cell: {
         width: '100%',
         height: '100%',
-        margin: 0,
         padding: 0,
+        margin: '0 0 5px 0',
+        cursor: 'pointer',
     },
     item: [
         getFocusStyle(theme, { inset: -1 }),
         {
             width: '100%',
-            height: 'auto',
+            height: '100%',
             borderRadius: 5,
-            // boxSizing: 'border-box',
-            // border: `1px solid ${semanticColors.bodyDivider}`,
-            // justifyContent: 'flex-start',
-            // alignItems: 'flex-start',
+            boxShadow: Depths.depth4,
             margin: 0,
             padding: 0,
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'flex-start',
             textAlign: 'left',
             selectors: {
                 '&:hover': { 
-                    background: 'linear-gradient(to right, ' + palette.themeLighter + ' 0%, ' + palette.white + ' 75%)',
+                    background: 'linear-gradient(to right, ' + palette.themeLighter + ' 0%, ' + palette.themeLighter + ' 75%)',
+                    boxShadow: Depths.depth8,
+                    cursor: 'pointer',
                 },
                 '&:hover .primaryText': {
                     background: palette.themePrimary,
-                    color: palette.white,
+                    color: palette.themeLighter,
+                    cursor: 'pointer',
                 },
                 '&:active': {
-                    background: 'linear-gradient(to right, ' + palette.themePrimary + ' 0%, ' + palette.white + ' 75%)',
-                    color: palette.white,
+                    background: 'linear-gradient(to right, ' + palette.themePrimary + ' 0%, ' + palette.themeLighter + ' 75%)',
+                    color: palette.themeLighter,
+                    boxShadow: Depths.depth64,
+                    cursor: 'pointer',
                 },
                 '&:active .primaryText': {
                     background: 'transparent',
-                    color: palette.white,
-                }
+                    color: palette.themeLighter,
+                    cursor: 'pointer',
+                },
+                '&:active .metaText': {
+                    color: palette.black,
+                },
             },
             cursor: 'pointer',
         },
     ],
     topStack: {
+        width: '100%',
+        height: '100%',
         display: 'flex',
         flexDirection: 'row',
+        padding: 5,
     },
     leftStack: {
-        display: 'flex',
-        flexDirection: 'column',
-        marginLeft: 5,
     },
     primaryText: {
         fontSize: 26,
-        backgroundColor: theme.palette.themeLighter,
+        backgroundColor: palette.themeLighter,
         borderRadius: 5,
         padding: '0 5px 5px 5px',
-        margin: '5px 5px 5px 0',
     },
     secondaryText: {
         fontSize: 20,
@@ -103,32 +107,23 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
     metaText: {
         fontSize: 12,
         textAlign: 'right',
-        margin: 'auto 2px 2px auto',
-        //alignSelf: 'flex-end',
+        margin: 'auto 2px 2px 2px',
     },
     rightStack: {
         display: 'flex',
         flexDirection: 'column',
-        alignSelf: 'flex-start',
-        justifySelf: 'flex-end',
-        //margin: '0 0 0 auto',
+        marginLeft: 'auto',
     },
     actionStack: {
-        // margin: '5px 5px 5px 5px',
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
     },
     items: {
-        display: 'flex',
-        flexDirection: 'column',
-        marginLeft: 5,
+        marginLeft: 10,
     },
     expanded: {
         borderRadius: 5,
-        boxSizing: 'border-box',
         border: `1px solid ${palette.themePrimary}`,
         background: palette.themeLight,
+        boxShadow: Depths.depth16,
     },
 });
 
@@ -168,13 +163,6 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
     }
 
     render(): JSX.Element {
-        const items = (
-            <div className={itemStyles.items}>
-                {this.items.map<JSX.Element>(value => {
-                    return value.render();
-                })}
-            </div>
-        );
         return (
             <Stack.Item>
                 <Stack className={this.expanded ? classnames([itemStyles.expanded, itemStyles.cell]) : itemStyles.cell}>
@@ -197,7 +185,25 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
                             </Stack.Item>
                         </Stack>
                     </Button>
-                    {this.expanded ? items : null}
+                    {/* {this.expanded ?  */}
+                        <Motion 
+                            defaultStyle={{x: -10, y: -60, opacity: 0}} 
+                            style={{
+                                x: spring((this.expanded ? 0 : -10), presets.wobbly), 
+                                y: spring((this.expanded ? 0 : -60), presets.wobbly), 
+                                opacity: spring((this.expanded ? 1 : 0), presets.wobbly),
+                            }}>
+                            {style => (
+                                style.y > -30 ?
+                                    <div style={{transform: `translate(${style.x}px, ${style.y}px)`, opacity: style.opacity}} className={itemStyles.items}>
+                                        {this.items.map<JSX.Element>(value => {
+                                            return value.render();
+                                        })}
+                                    </div>
+                                : null
+                            )}
+                        </Motion> 
+                    {/* : null} */}
                 </Stack>
             </Stack.Item>
         );
@@ -206,7 +212,7 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
     onClick(): void {
         if (this.items.length > 0) {
             this.expanded = !this.expanded;
-            consoleLog('lol');
+            redraw();
         }
     }
 
