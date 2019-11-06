@@ -68,18 +68,18 @@ export const App: React.FunctionComponent = () => {
                 <Stack.Item shrink={1} styles={ssControlItem} tokens={stControlItem}><DefaultButton text="Clear" onClick={clearConsole} allowDisabledFocus /></Stack.Item>
             </Stack>
             <MioList items={[
-                { icon: 'DocumentSet', primaryText: 'Antrag', secondaryText: '§A32 Klasse A', tertiaryText: 'mit Anhang C', actions: [MioListItemActionType.Edit], items: [
-                    { primaryText: 'Antrag', tertiaryText: '§A32', metaText: '###', items: [
+                { icon: 'DocumentSet', primaryText: 'Antragsdfsfsdfsfsfdsdfsdfsd', secondaryText: '§A32 Klasse Asfsdfsdfsfdsdfsdfsdfsdf', tertiaryText: 'mit Anhang C', actions: [MioListItemActionType.Edit], items: [
+                    { primaryText: 'Antragsfsdfsdfsfdsfds', tertiaryText: '§A32', metaText: '###', items: [
                         { secondaryText: 'Klasse A', metaText: 'test', items: [
                             { tertiaryText: 'Antrag' },
-                            { tertiaryText: 'Anhang C', actions: [MioListItemActionType.Feedback], items: [
+                            { tertiaryText: 'Anhang Csfdsdfsdfsdfsd', actions: [MioListItemActionType.Feedback], items: [
                                 { primaryText: 'Zusatz B43' }
                             ]}
                         ]}
                     ] }
                 ]},
-                { secondaryText: 'ROFL', metaText: 'Lol', items: [
-                    { tertiaryText: 'Blubb!', actions: [MioListItemActionType.Delete] },
+                { secondaryText: 'ROFL', metaText: 'Lolsdfsdfsdfsdfsdfsdfsdfsdf', items: [
+                    { tertiaryText: 'Blubb!sdfsdfsdfsdfsdfsdfsdf', actions: [MioListItemActionType.Delete] },
                     { tertiaryText: 'Blubber!!', items: [
                         { primaryText: 'EOEO' }
                     ]}

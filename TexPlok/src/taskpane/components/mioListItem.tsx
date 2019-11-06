@@ -5,7 +5,7 @@ import { MioListItemAction, MioListItemActionType } from './mioListItemAction';
 import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
 import { classnames } from './Helper';
 import { redraw } from '..';
-import { Motion, spring, presets } from 'react-motion'
+//import { Motion, spring, presets } from 'react-motion'
 
 const theme: ITheme = getTheme();
 const { palette } = theme;
@@ -26,6 +26,7 @@ export interface MioListItemClasses {
     topStack: string;
     leftStack: string;
     icon: string;
+    chevron: string;
     primaryText: string;
     secondaryText: string;
     tertiaryText: string;
@@ -38,16 +39,17 @@ export interface MioListItemClasses {
 
 const itemStyles: MioListItemClasses = mergeStyleSets({
     cell: {
-        width: '100%',
+        width: 'auto',
         height: '100%',
         padding: 0,
         margin: '0 0 5px 0',
         cursor: 'pointer',
+        whiteSpace: 'pre-wrap',
     },
     item: [
         getFocusStyle(theme, { inset: -1 }),
         {
-            width: '100%',
+            width: 'auto',
             height: '100%',
             borderRadius: 5,
             boxSizing: 'border-box',
@@ -59,23 +61,19 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
                 '&:hover': { 
                     background: 'linear-gradient(to right, ' + palette.themeLighter + ' 0%, ' + palette.themeLighter + ' 75%)',
                     boxShadow: Depths.depth8,
-                    cursor: 'pointer',
                 },
                 '&:hover .primaryText': {
                     background: palette.themePrimary,
                     color: palette.themeLighter,
-                    cursor: 'pointer',
                 },
                 '&:active': {
                     background: 'linear-gradient(to right, ' + palette.themePrimary + ' 0%, ' + palette.themeLighter + ' 75%)',
                     color: palette.themeLighter,
                     boxShadow: Depths.depth64,
-                    cursor: 'pointer',
                 },
                 '&:active .primaryText': {
                     background: 'transparent',
                     color: palette.themeLighter,
-                    cursor: 'pointer',
                 },
                 '&:active .metaText': {
                     color: palette.black,
@@ -89,62 +87,80 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
         height: '100%',
         display: 'flex',
         flexDirection: 'row',
-        //justifyContent: 'flex-start',
-        justifyContent: 'stretch',
-        alignItems: 'stretch',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
         padding: 5,
-        // overflow: 'hidden',
-        // textOverflow: 'ellipsis',
     },
     leftStack: {
-        width: 'available',
-        // width: 'auto',
-        // maxWidth: '65%',
-        //width: '100%',
-        //width: 'auto',
-        // maxWidth: '100%',
-        //background: palette.red,
-        // overflow: 'hidden',
-        // textOverflow: 'ellipsis',
+        width: 'auto',
+        height: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        overflow: 'hidden',
     },
     icon: {
         margin: 0,
         padding: '5px 5px 5px 0',
         fontSize: 48,
     },
+    chevron: {
+        padding: 5,
+        marginTop: 'auto'
+    },
     primaryText: {
-        //width: '100%',
-        //width: 'available',
+        width: 'auto',
+        maxWidth: '100%',
         fontSize: 26,
         backgroundColor: palette.themeLighter,
         borderRadius: 5,
         padding: '0 5px 5px 5px',
-        // textOverflow: 'ellipsis',
-        // overflow: 'hidden',
+        margin: '0 10px 0 0',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
     },
     secondaryText: {
+        width: 'auto',
+        maxWidth: '100%',
         fontSize: 20,
         margin: '2px 0 2px 5px',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
     },
     tertiaryText: {
+        width: 'auto',
+        maxWidth: '100%',
         fontSize: 14,
         margin: '2px 0 2px 5px',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
     },
     metaText: {
+        width: 'auto',
+        maxWidth: '100%',
         fontSize: 12,
-        textAlign: 'right',
+        //textAlign: 'right',
         margin: 'auto 2px 2px 2px',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
     },
     rightStack: {
-        width: '100%',
+        width: 'auto',
+        minWidth: 30,
         display: 'flex',
         flexDirection: 'column',
         marginLeft: 'auto',
+        overflow: 'hidden',
     },
     actionStack: {
     },
     items: {
-        marginLeft: 10,
+        marginLeft: 5,
     },
     expanded: {
         borderRadius: 5,
@@ -189,7 +205,10 @@ export class MioListItem extends React.Component<MioListItemProps> {
                         onClick={() => this.onClick()}
                     >
                         <Stack className={itemStyles.topStack}>
-                            <Stack.Item className={itemStyles.icon}>{this.icon != undefined ? (<Icon iconName={this.icon}></Icon>) : null}</Stack.Item>
+                            <Stack style={{display: 'flex', flexDirection: 'column'}}>
+                                <Stack.Item className={itemStyles.icon}>{this.icon != undefined ? (<Icon iconName={this.icon}></Icon>) : null}</Stack.Item>
+                                {this.items.length > 0 ? <Icon className={itemStyles.chevron} iconName={(this.expanded ? 'ChevronDown' : 'ChevronUp')}></Icon> : null}
+                            </Stack>
                             <Stack className={itemStyles.leftStack}>
                                 <Stack.Item className={classnames(['primaryText', itemStyles.primaryText])}>{this.primaryText}</Stack.Item>
                                 <Stack.Item className={classnames(['secondaryText', itemStyles.secondaryText])}>{this.secondaryText}</Stack.Item>
@@ -205,8 +224,15 @@ export class MioListItem extends React.Component<MioListItemProps> {
                             </Stack>
                         </Stack>
                     </Button>
+                    {this.expanded ? 
+                        <div className={itemStyles.items}>
+                            {this.items.map<JSX.Element>(value => {
+                                return value.render();
+                            })}
+                        </div>
+                    : null}
                     {/* {this.expanded ?  */}
-                        <Motion 
+                        {/* <Motion 
                             defaultStyle={{x: -10, y: -60, opacity: 0}} 
                             style={{
                                 x: spring((this.expanded ? 0 : -10), presets.gentle), 
@@ -222,7 +248,7 @@ export class MioListItem extends React.Component<MioListItemProps> {
                                     </div>
                                 : null
                             )}
-                        </Motion> 
+                        </Motion> */}
                     {/* : null} */}
                 </Stack>
             </Stack.Item>
