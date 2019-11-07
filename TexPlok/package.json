@@ -33,7 +33,8 @@
     "office-ui-fabric-react": "^7.10.0",
     "react": "^16.8.2",
     "react-dom": "^16.8.2",
-    "react-motion": "^0.5.2"
+    "react-motion": "^0.5.2",
+    "react-native-text-gradient": "^0.1.7"
   },
   "devDependencies": {
     "@babel/core": "^7.6.0",

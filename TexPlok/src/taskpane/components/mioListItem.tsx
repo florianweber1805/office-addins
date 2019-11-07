@@ -94,6 +94,7 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
     leftStack: {
         width: 'auto',
         height: 'auto',
+        minWidth: 0,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'flex-start',
@@ -206,50 +207,31 @@ export class MioListItem extends React.Component<MioListItemProps> {
                     >
                         <Stack className={itemStyles.topStack}>
                             <Stack style={{display: 'flex', flexDirection: 'column'}}>
-                                <Stack.Item className={itemStyles.icon}>{this.icon != undefined ? (<Icon iconName={this.icon}></Icon>) : null}</Stack.Item>
+                                {this.icon != undefined ? <Stack.Item className={itemStyles.icon}><Icon iconName={this.icon}></Icon></Stack.Item>: null}
                                 {this.items.length > 0 ? <Icon className={itemStyles.chevron} iconName={(this.expanded ? 'ChevronDown' : 'ChevronUp')}></Icon> : null}
                             </Stack>
                             <Stack className={itemStyles.leftStack}>
-                                <Stack.Item className={classnames(['primaryText', itemStyles.primaryText])}>{this.primaryText}</Stack.Item>
-                                <Stack.Item className={classnames(['secondaryText', itemStyles.secondaryText])}>{this.secondaryText}</Stack.Item>
-                                <Stack.Item className={classnames(['tertiaryText', itemStyles.tertiaryText])}>{this.tertiaryText}</Stack.Item>
+                                {this.primaryText ? <Stack.Item className={classnames(['primaryText', itemStyles.primaryText])}>{this.primaryText}</Stack.Item>: null}
+                                {this.secondaryText ? <Stack.Item className={classnames(['secondaryText', itemStyles.secondaryText])}>{this.secondaryText}</Stack.Item>: null}
+                                {this.tertiaryText ? <Stack.Item className={classnames(['tertiaryText', itemStyles.tertiaryText])}>{this.tertiaryText}</Stack.Item>: null}
                             </Stack>
                             <Stack className={itemStyles.rightStack}>
-                                <Stack.Item align='end' className={itemStyles.actionStack}>
+                                {this.actions.length > 0 ? <Stack.Item align='end' className={itemStyles.actionStack}>
                                     {this.actions.map<JSX.Element>(value => {
                                         return value.render();
                                     })}
-                                </Stack.Item>
-                                <Stack.Item align='end' className={classnames(['metaText', itemStyles.metaText])}>{this.metaText}</Stack.Item>
+                                </Stack.Item>: null}
+                                {this.metaText ? <Stack.Item align='end' className={classnames(['metaText', itemStyles.metaText])}>{this.metaText}</Stack.Item>: null}
                             </Stack>
                         </Stack>
                     </Button>
-                    {this.expanded ? 
+                    {this.expanded && this.items.length > 0 ? 
                         <div className={itemStyles.items}>
                             {this.items.map<JSX.Element>(value => {
                                 return value.render();
                             })}
                         </div>
                     : null}
-                    {/* {this.expanded ?  */}
-                        {/* <Motion 
-                            defaultStyle={{x: -10, y: -60, opacity: 0}} 
-                            style={{
-                                x: spring((this.expanded ? 0 : -10), presets.gentle), 
-                                y: spring((this.expanded ? 0 : -60), presets.gentle), 
-                                opacity: spring((this.expanded ? 1 : 0), presets.gentle),
-                            }}>
-                            {style => (
-                                style.y > -30 ?
-                                    <div style={{transform: `translate(${style.x}px, ${style.y}px)`, opacity: style.opacity}} className={itemStyles.items}>
-                                        {this.items.map<JSX.Element>(value => {
-                                            return value.render();
-                                        })}
-                                    </div>
-                                : null
-                            )}
-                        </Motion> */}
-                    {/* : null} */}
                 </Stack>
             </Stack.Item>
         );
