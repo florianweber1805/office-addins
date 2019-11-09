@@ -65,14 +65,15 @@
     "office-addin-lint": "^1.0.15",
     "office-addin-prettier-config": "^1.0.10",
     "postcss-loader": "3.0.0",
-    "react-hot-loader": "^4.12.6",
+    "react-hot-loader": "^4.12.16",
     "source-map-loader": "^0.2.4",
     "style-loader": "^0.23.1",
     "ts-loader": "^6.1.0",
     "typescript": "^3.6.3",
     "webpack": "^4.40.2",
     "webpack-cli": "^3.3.8",
-    "webpack-dev-server": "^3.8.0"
+    "webpack-dev-server": "^3.8.0",
+    "webpack-hot-middleware": "^2.25.0"
   },
   "prettier": "office-addin-prettier-config"
 }

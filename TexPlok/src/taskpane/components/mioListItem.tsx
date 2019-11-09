@@ -5,6 +5,7 @@ import { MioListItemAction, MioListItemActionType } from './mioListItemAction';
 import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
 import { classnames } from './Helper';
 import { redraw } from '..';
+//import { redraw } from '..';
 //import { Motion, spring, presets } from 'react-motion'
 
 const theme: ITheme = getTheme();
@@ -18,6 +19,17 @@ export interface MioListItemProps {
     metaText?: string;
     actions?: MioListItemActionType[];
     items?: MioListItemProps[];
+}
+
+export interface MioListItemState {
+    icon: string;
+    primaryText: string;
+    secondaryText: string;
+    tertiaryText: string;
+    metaText: string;
+    actions: MioListItemAction[];
+    items: MioListItem[];
+    expanded: boolean;
 }
 
 export interface MioListItemClasses {
@@ -212,6 +224,7 @@ export class MioListItem extends React.Component<MioListItemProps> {
                             </Stack>
                             <Stack className={itemStyles.leftStack}>
                                 {this.primaryText ? <Stack.Item className={classnames(['primaryText', itemStyles.primaryText])}>{this.primaryText}</Stack.Item>: null}
+                                {/* <MioPrimaryText text={this.primaryText} /> */}
                                 {this.secondaryText ? <Stack.Item className={classnames(['secondaryText', itemStyles.secondaryText])}>{this.secondaryText}</Stack.Item>: null}
                                 {this.tertiaryText ? <Stack.Item className={classnames(['tertiaryText', itemStyles.tertiaryText])}>{this.tertiaryText}</Stack.Item>: null}
                             </Stack>

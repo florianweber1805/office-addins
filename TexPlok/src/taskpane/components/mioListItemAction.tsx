@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabric-react/lib/Styling';
-import { IconButton, format } from 'office-ui-fabric-react';
-import { consoleLog } from './mioList';
+import { IconButton } from 'office-ui-fabric-react';
+//import { consoleLog } from './mioList';
 import { classnames } from './Helper';
 
 const theme: ITheme = getTheme();
@@ -63,7 +63,7 @@ export class MioListItemAction extends React.Component<MioListItemActionProps> {
     }
 
     onClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
-        consoleLog(format('Action "{0}" pressed!', this.text));
+        //consoleLog(format('Action "{0}" pressed!', this.text));
         event.stopPropagation();
     }
 

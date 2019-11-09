@@ -1,11 +1,8 @@
 import * as React from 'react';
 import { MioListItem, MioListItemProps } from './mioListItem';
 import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabric-react/lib/Styling';
-import { redraw } from '..';
-//import { redraw } from '..';
 
 const theme: ITheme = getTheme();
-//const { palette } = theme;
 
 export interface MioListProps {
     items: MioListItemProps[];
@@ -21,25 +18,13 @@ const listStyles: MioListClasses = mergeStyleSets({
         {
             width: 'auto',
             height: 'auto',
-            padding: '0 5px 0 5px',
+            margin: '0 5px 0 5px',
         },
     ],
 })
 
 export interface MioListState {
     items: MioListItem[];
-}
-
-var lines = new Array<string>();
-
-export function consoleLog(message: string) {
-    lines.push(message);
-    redraw();
-}
-
-export function consoleClear() {
-    lines = new Array<string>();
-    redraw();
 }
 
 export class MioList extends React.Component<MioListProps, MioListState> {
@@ -55,12 +40,12 @@ export class MioList extends React.Component<MioListProps, MioListState> {
 
     render(): JSX.Element {
         return (
-            <div className={listStyles.cell}>
-                {this.state.items.map(value => { return value.render(); })}
-                {lines.map(value => (
-                    <div>{value}</div>
-                ))}
-            </div>
+            <ul className={listStyles.cell}>
+                {/* Render ListItems */}
+                {this.state.items.map((value: MioListItem, index: number) => {
+                    return <div key={index}>{value.render()}</div>
+                })}
+            </ul>
         );
     }
 

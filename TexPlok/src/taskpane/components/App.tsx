@@ -4,7 +4,7 @@ import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabri
 import { SearchBox } from 'office-ui-fabric-react/lib/SearchBox';
 import { MioListItemActionType } from './mioListItemAction';
 import { initializeIcons } from '@uifabric/icons';
-import { MioList, consoleClear } from "./mioList";
+import { MioList } from "./mioList";
 initializeIcons();
 
 export const theme: ITheme = getTheme();
@@ -99,5 +99,5 @@ function _collapse(): void {
 }
 
 function clearConsole(): void {
-    consoleClear();
+    //consoleClear();
 }
