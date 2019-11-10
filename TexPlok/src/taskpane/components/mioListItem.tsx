@@ -1,12 +1,10 @@
 import * as React from 'react';
 import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabric-react/lib/Styling';
-import { Stack, Button, Icon } from 'office-ui-fabric-react';
+import { Stack, Icon, Button } from 'office-ui-fabric-react';
 import { MioListItemAction, MioListItemActionType } from './mioListItemAction';
 import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
 import { classnames } from './Helper';
 import { redraw } from '..';
-//import { redraw } from '..';
-//import { Motion, spring, presets } from 'react-motion'
 
 const theme: ITheme = getTheme();
 const { palette } = theme;
@@ -35,8 +33,10 @@ export interface MioListItemState {
 export interface MioListItemClasses {
     cell: string;
     item: string;
+    expanded: string;
     topStack: string;
     leftStack: string;
+    actionStack: string;
     icon: string;
     chevron: string;
     primaryText: string;
@@ -44,17 +44,16 @@ export interface MioListItemClasses {
     tertiaryText: string;
     metaText: string;
     rightStack: string;
-    actionStack: string;
     items: string;
-    expanded: string;
 }
 
 const itemStyles: MioListItemClasses = mergeStyleSets({
     cell: {
         width: 'auto',
-        height: '100%',
+        height: 'auto',
         padding: 0,
-        margin: '0 0 5px 0',
+        margin: 0,
+        borderRadius: 5,
         cursor: 'pointer',
         whiteSpace: 'pre-wrap',
     },
@@ -71,7 +70,7 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
             textAlign: 'left',
             selectors: {
                 '&:hover': { 
-                    background: 'linear-gradient(to right, ' + palette.themeLighter + ' 0%, ' + palette.themeLighter + ' 75%)',
+                    background: 'linear-gradient(to right, ' + palette.themeLighter + ' 0%, ' + palette.white + ' 75%)',
                     boxShadow: Depths.depth8,
                 },
                 '&:hover .primaryText': {
@@ -94,6 +93,12 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
             cursor: 'pointer',
         },
     ],
+    expanded: {
+        borderRadius: 5,
+        border: `1px solid ${palette.themePrimary}`,
+        background: palette.themeLight,
+        boxShadow: Depths.depth16,
+    },
     topStack: {
         width: '100%',
         height: '100%',
@@ -112,6 +117,11 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
         overflow: 'hidden',
+    },
+    actionStack: {
+        // display: 'flex',
+        // flexDirection: 'column',
+        // background: palette.yellow,
     },
     icon: {
         margin: 0,
@@ -170,16 +180,9 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
         marginLeft: 'auto',
         overflow: 'hidden',
     },
-    actionStack: {
-    },
+    
     items: {
         marginLeft: 5,
-    },
-    expanded: {
-        borderRadius: 5,
-        border: `1px solid ${palette.themePrimary}`,
-        background: palette.themeLight,
-        boxShadow: Depths.depth16,
     },
 });
 
@@ -212,6 +215,45 @@ export class MioListItem extends React.Component<MioListItemProps> {
 
     render(): JSX.Element {
         return (
+            // <div className={this.expanded ? classnames([itemStyles.expanded, itemStyles.cell]) : itemStyles.cell}>
+            //     <div draggable={true} onClick={() => this.onClick()}>
+            //         <Stack className={itemStyles.topStack}>
+            //             <Stack.Item verticalFill={true}>
+            //                 <Stack className={itemStyles.iconStack}>
+            //                     {this.icon != undefined ? <Stack.Item><Icon className={itemStyles.icon} iconName={this.icon} /></Stack.Item> : null}
+            //                     {this.items.length > 0 ? <Stack.Item><Icon className={itemStyles.chevron} iconName={(this.expanded ? 'ChevronDown' : 'ChevronUp')} /></Stack.Item> : null}
+            //                 </Stack>
+            //             </Stack.Item>
+            //             <Stack.Item verticalFill={true} shrink={1} grow={1}>
+            //                 <Stack className={itemStyles.textStack}>
+            //                     {this.primaryText != undefined ? <Stack.Item><Label className={itemStyles.primaryText}>{this.primaryText}</Label></Stack.Item> : null}
+            //                     {this.secondaryText != undefined ? <Stack.Item><Label className={itemStyles.secondaryText}>{this.secondaryText}</Label></Stack.Item> : null}
+            //                     {this.tertiaryText != undefined ? <Stack.Item><Label className={itemStyles.tertiaryText}>{this.tertiaryText}</Label></Stack.Item> : null}
+            //                 </Stack>
+            //             </Stack.Item>
+            //             <Stack.Item verticalFill={true}>
+            //                 <Stack className={itemStyles.actionStack}>
+            //                     {this.actions.length > 0 ? 
+            //                         <Stack.Item align='end'>
+            //                             {this.actions.map<JSX.Element>(value => {
+            //                                 return value.render();
+            //                             })}
+            //                         </Stack.Item>
+            //                     : null}
+            //                     {this.metaText != undefined ? <Stack.Item align='end'><Label>{this.metaText}</Label></Stack.Item> : null}
+            //                     {/* {this.metaText ? <Stack.Item align='end' className={classnames(['metaText', itemStyles.metaText])}>{this.metaText}</Stack.Item>: null} */}
+            //                 </Stack>
+            //             </Stack.Item>
+            //         </Stack>
+            //     </div>
+            //     {this.expanded && this.items.length > 0 ? 
+            //         <div className={itemStyles.items}>
+            //             {this.items.map<JSX.Element>(value => {
+            //                 return value.render();
+            //             })}
+            //         </div>
+            //     : null}
+            // </div>
             <Stack.Item>
                 <Stack className={this.expanded ? classnames([itemStyles.expanded, itemStyles.cell]) : itemStyles.cell}>
                     <Button draggable={true} className={itemStyles.item}

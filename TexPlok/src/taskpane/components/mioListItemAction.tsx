@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabric-react/lib/Styling';
 import { IconButton } from 'office-ui-fabric-react';
-//import { consoleLog } from './mioList';
 import { classnames } from './Helper';
 
 const theme: ITheme = getTheme();

@@ -4,36 +4,31 @@ import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabri
 const theme: ITheme = getTheme();
 
 export interface MioConsoleProps {
-    lines: string[];
-}
-
-export interface MioConsoleState {
-    lines: string[];
+    lines?: string[];
 }
 
 export interface MioConsoleClasses {
-
+    cell: string;
 }
 
 const listStyles: MioConsoleClasses = mergeStyleSets({
     cell: [
         getFocusStyle(theme, { inset: -1 }),
         {
-
+            width: 'auto',
         },
     ],
 })
 
-export class mioConsole extends React.Component<MioConsoleProps, MioConsoleState> {
+export class MioConsole extends React.Component<MioConsoleProps> {
 
     constructor(props: MioConsoleProps) {
         super(props)
-        
     }
 
     render(): JSX.Element {
         return (
-            <div></div>
+            <div className={listStyles.cell}></div>
         );
     }
 

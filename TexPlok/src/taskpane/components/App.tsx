@@ -5,6 +5,7 @@ import { SearchBox } from 'office-ui-fabric-react/lib/SearchBox';
 import { MioListItemActionType } from './mioListItemAction';
 import { initializeIcons } from '@uifabric/icons';
 import { MioList } from "./mioList";
+import { MioConsole } from "./mioConsole";
 initializeIcons();
 
 export const theme: ITheme = getTheme();
@@ -20,8 +21,11 @@ const styles: AppClasses = mergeStyleSets({
     cell: [
         getFocusStyle(theme, { inset: -1 }),
         {
-            width: '100%',
             height: '100%',
+            position: 'absolute',
+            left: 0,
+            width: '100%',
+            overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
         },
@@ -63,9 +67,15 @@ export const App: React.FunctionComponent = () => {
 	return (
         <div className={styles.cell}>
             <Stack className={styles.controls} tokens={stControl}>
-                <Stack.Item grow={3} styles={ssControlItem} tokens={stControlItem}><SearchBox className={styles.searchBox} placeholder="Search" onSearch={newValue => _search(newValue)} /></Stack.Item>
-                <Stack.Item shrink={1} styles={ssControlItem} tokens={stControlItem}><PrimaryButton text="Collapse" onClick={_collapse} allowDisabledFocus /></Stack.Item>
-                <Stack.Item shrink={1} styles={ssControlItem} tokens={stControlItem}><DefaultButton text="Clear" onClick={clearConsole} allowDisabledFocus /></Stack.Item>
+                <Stack.Item grow={3} styles={ssControlItem} tokens={stControlItem}>
+                    <SearchBox className={styles.searchBox} placeholder="Search" onSearch={newValue => _search(newValue)}/>
+                </Stack.Item>
+                <Stack.Item shrink={1} styles={ssControlItem} tokens={stControlItem}>
+                    <PrimaryButton text="Collapse" onClick={_collapse} allowDisabledFocus />
+                </Stack.Item>
+                <Stack.Item shrink={1} styles={ssControlItem} tokens={stControlItem}>
+                    <DefaultButton text="Clear" onClick={clearConsole} allowDisabledFocus />
+                </Stack.Item>
             </Stack>
             <MioList items={[
                 { icon: 'DocumentSet', primaryText: 'Antragsdfsfsdfsfsfdsdfsdfsd', secondaryText: '§A32 Klasse Asfsdfsdfsfdsdfsdfsdfsdf', tertiaryText: 'mit Anhang C', actions: [MioListItemActionType.Edit], items: [
@@ -83,8 +93,25 @@ export const App: React.FunctionComponent = () => {
                     { tertiaryText: 'Blubber!!', items: [
                         { primaryText: 'EOEO' }
                     ]}
-                ]}
+                ]},
+                { icon: 'DocumentSet', primaryText: 'Antragsdfsfsdfsfsfdsdfsdfsd', secondaryText: '§A32 Klasse Asfsdfsdfsfdsdfsdfsdfsdf', tertiaryText: 'mit Anhang C', actions: [MioListItemActionType.Edit], items: [
+                    { primaryText: 'Antragsfsdfsdfsfdsfds', tertiaryText: '§A32', metaText: '###', items: [
+                        { secondaryText: 'Klasse A', metaText: 'test', items: [
+                            { tertiaryText: 'Antrag' },
+                            { tertiaryText: 'Anhang Csfdsdfsdfsdfsd', actions: [MioListItemActionType.Feedback], items: [
+                                { primaryText: 'Zusatz B43' }
+                            ]}
+                        ]}
+                    ] }
+                ]},
+                { secondaryText: 'ROFL', metaText: 'Lolsdfsdfsdfsdfsdfsdfsdfsdf', items: [
+                    { tertiaryText: 'Blubb!sdfsdfsdfsdfsdfsdfsdf', actions: [MioListItemActionType.Delete] },
+                    { tertiaryText: 'Blubber!!', items: [
+                        { primaryText: 'EOEO' }
+                    ]}
+                ]},
             ]} />
+            <MioConsole></MioConsole>
         </div>
 	);
 };
