@@ -70,7 +70,7 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
             textAlign: 'left',
             selectors: {
                 '&:hover': { 
-                    background: 'linear-gradient(to right, ' + palette.themeLighter + ' 0%, ' + palette.white + ' 75%)',
+                    background: palette.themeLighter, //'linear-gradient(to right, ' + palette.themeLighter + ' 0%, ' + palette.white + ' 75%)',
                     boxShadow: Depths.depth8,
                 },
                 '&:hover .primaryText': {
@@ -78,7 +78,7 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
                     color: palette.themeLighter,
                 },
                 '&:active': {
-                    background: 'linear-gradient(to right, ' + palette.themePrimary + ' 0%, ' + palette.themeLighter + ' 75%)',
+                    background: palette.themePrimary, //'linear-gradient(to right, ' + palette.themePrimary + ' 0%, ' + palette.themeLighter + ' 75%)',
                     color: palette.themeLighter,
                     boxShadow: Depths.depth64,
                 },
@@ -210,7 +210,7 @@ export class MioListItem extends React.Component<MioListItemProps> {
         this.items = (props.items != undefined ? Array.apply(null, props.items.map(value => {
                 return new MioListItem(value);
             })) : []);
-        this.expanded = this.items.length > 0;
+        this.expanded = false; //this.items.length > 0;
     }
 
     render(): JSX.Element {

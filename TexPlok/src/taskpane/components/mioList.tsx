@@ -25,6 +25,7 @@ const listStyles: MioListClasses = mergeStyleSets({
     list: [
         getFocusStyle(theme, { inset: -1 }),
         {
+            width: 'auto',
             marginBottom: 'auto',
             margin: '0 5px 0 5px',
             padding: 0,   

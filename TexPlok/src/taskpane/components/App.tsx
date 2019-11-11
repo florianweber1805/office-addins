@@ -64,6 +64,52 @@ const stControlItem: IStackItemTokens = {
 }
 
 export const App: React.FunctionComponent = () => {
+    
+    //var data = undefined;
+
+    fetch('https://addin.eap4.me/test.php', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+    .then(function(response) {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Kurse konnten nicht geladen werden');
+        }
+    })
+    .then(function(json) {
+        console.log(JSON.stringify(json));
+    })
+    .catch(function(err) {
+        console.log(err);
+    });
+
+    // try {
+    //     data = getData();
+    // } catch (error) {
+    //     console.error(error);
+    // }
+
+    // fetch('https://addin.eap4.me/test.php', {
+    //     method: 'GET',
+    //     headers: {
+    //         'Content-Type': 'application/json'
+    //         // 'Content-Type': 'application/x-www-form-urlencoded',
+    //     },
+    //     body: JSON.stringify(data) // body data type must match "Content-Type" header
+    // })
+
+    // async function getData() {
+    //     const response = await fetch('https://addin.eap4.me/test.php');
+    //     return await response.json();
+    // }
+
+    // console.log(JSON.stringify(data));
+    // console.log('rofl')
+
 	return (
         <div className={styles.cell}>
             <Stack className={styles.controls} tokens={stControl}>
@@ -82,7 +128,7 @@ export const App: React.FunctionComponent = () => {
                     { primaryText: 'Antragsfsdfsdfsfdsfds', tertiaryText: '§A32', metaText: '###', items: [
                         { secondaryText: 'Klasse A', metaText: 'test', items: [
                             { tertiaryText: 'Antrag' },
-                            { tertiaryText: 'Anhang Csfdsdfsdfsdfsd', actions: [MioListItemActionType.Feedback], items: [
+                            { tertiaryText: 'Anhang Csfdsdfsdfsdfsd', actions: [MioListItemActionType.Feedback, MioListItemActionType.Delete], items: [
                                 { primaryText: 'Zusatz B43' }
                             ]}
                         ]}
