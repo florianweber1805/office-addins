@@ -1,6 +1,6 @@
 <?php
 //server kontaktieren
-function sconnect(){
+function sconnect() {
 
 	$host_name = 'db5000203908.hosting-data.io';
 	$database = 'dbs198901';

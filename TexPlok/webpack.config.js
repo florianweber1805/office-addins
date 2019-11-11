@@ -78,7 +78,12 @@ module.exports = async (env, options)  => {
       ]),
       new webpack.ProvidePlugin({
         Promise: ["es6-promise", "Promise"]
-      })
+      }),
+      new CopyWebpackPlugin([
+        {
+          from: './src/php',
+        },
+      ]),
     ],
     devServer: {
       headers: {
