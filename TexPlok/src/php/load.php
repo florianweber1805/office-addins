@@ -17,10 +17,10 @@
     $person = $_GET["p"];
 
     // Attributes
-    $sql = "SELECT tbs.id, tbs.text, tbs.description, tbs.author, tbs.timestamp, tbs.Type FROM textblocks AS tbs";
+    $sql = "SELECT tbs.id, tbs.text, tbs.description, tbs.author, tbs.timestamp, tbs.Type FROM textblock AS tbs";
     if (!is_null($textblock)) {
-        $sql = "SELECT tbs.id, tbs.text, tbs.description, tbs.author, tbs.timestamp, tbs.Type FROM textblockchilds AS tbc
-            INNER JOIN textblocks AS tbs ON tbs.id = tbc.child
+        $sql = "SELECT tbs.id, tbs.text, tbs.description, tbs.author, tbs.timestamp, tbs.Type FROM textblock_child AS tbc
+            INNER JOIN textblock AS tbs ON tbs.id = tbc.child
             WHERE tbc.parent = " . (string)$textblock;
     }
     $result = mysqli_query($connect, $sql);
