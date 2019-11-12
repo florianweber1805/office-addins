@@ -1,4 +1,6 @@
 <?php
+    header("Access-Control-Allow-Origin: *");
+    
     include("login.php");			
     $connect = sconnect();
 

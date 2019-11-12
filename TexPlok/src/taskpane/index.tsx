@@ -13,9 +13,9 @@ let isOfficeInitialized = false;
 
 const title = "Contoso Task Pane Add-in";
 
-export function redraw() {
-    render(App);
-}
+// export function redraw() {
+//     render(App);
+// }
 
 const render = Component => {
     ReactDOM.render(

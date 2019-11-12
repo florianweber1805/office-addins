@@ -1,4 +1,6 @@
 <?php
+    header("Access-Control-Allow-Origin: *");
+
     include("login.php");
     $connect = sconnect();
 
@@ -7,14 +9,20 @@
         die("Connection failed: " . mysqli_connect_error());
     }
 
-    $textblock = $_GET["textblock"];
-    $company = $_GET["company"];
-    $department = $_GET["department"];
-    $group = $_GET["group"];
-    $person = $_GET["person"];
+    $search = $_GET["s"];
+    $textblock = $_GET["t"];
+    $company = $_GET["c"];
+    $department = $_GET["d"];
+    $group = $_GET["g"];
+    $person = $_GET["p"];
 
     // Attributes
-    $sql = "SELECT * FROM textblocks";
+    $sql = "SELECT tbs.id, tbs.text, tbs.description, tbs.author, tbs.timestamp, tbs.Type FROM textblocks AS tbs";
+    if (!is_null($textblock)) {
+        $sql = "SELECT tbs.id, tbs.text, tbs.description, tbs.author, tbs.timestamp, tbs.Type FROM textblockchilds AS tbc
+            INNER JOIN textblocks AS tbs ON tbs.id = tbc.child
+            WHERE tbc.parent = " . (string)$textblock;
+    }
     $result = mysqli_query($connect, $sql);
 
     // Check results

@@ -63,7 +63,15 @@ export class MioListItemAction extends React.Component<MioListItemActionProps> {
 
     onClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
         //consoleLog(format('Action "{0}" pressed!', this.text));
+        var strWindowFeatures = "location=yes,height=570,width=520,scrollbars=yes,status=yes";
+        window.open('https://addin.eap4.me/load.php', '_blank', strWindowFeatures);
         event.stopPropagation();
     }
 
+}
+
+export function renderMioListItemAction(type: MioListItemActionType): JSX.Element {
+    return (
+        <MioListItemAction type={type} />
+    );
 }
