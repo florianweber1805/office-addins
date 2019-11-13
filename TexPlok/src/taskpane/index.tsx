@@ -5,17 +5,11 @@ import { App } from "./components/App";
 import { AppContainer } from "react-hot-loader";
 import { initializeIcons } from "office-ui-fabric-react/lib/Icons";
 
-/* global AppCpntainer, Component, document, Office, module, require */
-
 initializeIcons();
 
-let isOfficeInitialized = false;
+export let isOfficeInitialized = false;
 
-const title = "Contoso Task Pane Add-in";
-
-// export function redraw() {
-//     render(App);
-// }
+const title = "TexPlok";
 
 const render = Component => {
     ReactDOM.render(
@@ -28,7 +22,6 @@ const render = Component => {
 
 /* Render application after Office initializes */
 Office.initialize = () => {
-    
     isOfficeInitialized = true;
     render(App);
 };

@@ -1,25 +1,16 @@
 import * as React from 'react';
 import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabric-react/lib/Styling';
-import { Stack, Icon } from 'office-ui-fabric-react';
-import { MioListItemAction, MioListItemActionType, renderMioListItemAction } from './mioListItemAction';
+import { Stack, Icon, format, Spinner } from 'office-ui-fabric-react';
+import { MioListItemAction } from './mioListItemAction';
 import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
-import { classnames } from './Helper';
+import { classnames, fetchdata, urlInfo, urlChildren, urlAction } from './Helper';
 import { listStyles } from './mioList';
-//import { redraw } from '..';
 
 const theme: ITheme = getTheme();
 const { palette } = theme;
 
 export interface MioListItemProps {
     id: number;
-    icon?: string;
-    primaryText?: string;
-    secondaryText?: string;
-    tertiaryText?: string;
-    metaText?: string;
-    actions?: MioListItemActionType[];
-    items?: MioListItemProps[];
-    expanded?: boolean;
 }
 
 export interface MioListItemState {
@@ -29,10 +20,152 @@ export interface MioListItemState {
     secondaryText: string;
     tertiaryText: string;
     metaText: string;
-    actions: MioListItemAction[];
-    items: MioListItem[];
+    actions: number[];
+    items: number[];
     expanded: boolean;
-    loading: boolean;
+    loading: number;
+}
+
+export class MioListItem extends React.Component<MioListItemProps, MioListItemState> {
+
+    constructor(props: MioListItemProps) {
+        super(props);
+        this.state = {
+            id: props.id,
+            icon: '',
+            primaryText: '',
+            secondaryText: '',
+            tertiaryText: '',
+            metaText: '',
+            actions: new Array<number>(),
+            items: new Array<number>(),
+            expanded: false,
+            loading: 0,
+        }
+        this.onClick = this.onClick.bind(this);
+    }
+
+    componentDidMount() {
+        const that = this;
+        this.setState({loading: 3});
+
+        // Values
+        fetchdata(format(urlInfo, this.state.id), 
+        function(data) {
+            console.log(data);
+            that.setState({
+                icon: data[0].icon,
+                primaryText: data[0].name,
+                secondaryText: data[0].text,
+                tertiaryText: data[0].description,
+                metaText: data[0].timestamp,
+                loading: that.state.loading - 1,
+            });
+        }, function() {
+            that.setState({loading: that.state.loading - 1});
+        });
+
+        // SubItems
+        fetchdata(format(urlChildren, this.state.id),
+        function(data) {
+            that.setState({
+                items: data.map(obj => obj.id),
+                loading: that.state.loading - 1,
+            });
+        }, function() {
+            that.setState({loading: that.state.loading - 1});
+        });
+
+        // Actions
+        fetchdata(format(urlAction, this.state.id),
+        function(data) {
+            that.setState({
+                actions: data.map(obj => obj.action),
+                loading: that.state.loading - 1,
+            });
+        }, function() {
+            that.setState({loading: that.state.loading - 1});
+        });
+    }
+
+    render(): JSX.Element {
+        return (
+            this.state.loading > 0 ? 
+                <Spinner></Spinner>
+            :
+                <Stack.Item>
+                    <Stack className={this.state.expanded ? classnames([itemStyles.expanded, itemStyles.cell]) : itemStyles.cell}>
+                        <div draggable={true} className={itemStyles.item}
+                            onClick={() => this.onClick()}
+                        >
+                            <Stack className={itemStyles.topStack}>
+                                <Stack style={{display: 'flex', flexDirection: 'column'}}>
+                                    {this.state.icon != undefined ? <Stack.Item className={itemStyles.icon}><Icon iconName={this.state.icon}></Icon></Stack.Item>: null}
+                                    {this.state.items.length > 0 ? <Icon className={itemStyles.chevron} iconName={(this.state.expanded ? 'ChevronDown' : 'ChevronUp')}></Icon> : null}
+                                </Stack>
+                                <Stack className={itemStyles.leftStack}>
+                                    {this.state.primaryText ? <Stack.Item className={classnames(['primaryText', itemStyles.primaryText])}>{this.state.primaryText}</Stack.Item>: null}
+                                    {this.state.secondaryText ? <Stack.Item className={classnames(['secondaryText', itemStyles.secondaryText])}>{this.state.secondaryText}</Stack.Item>: null}
+                                    {this.state.tertiaryText ? <Stack.Item className={classnames(['tertiaryText', itemStyles.tertiaryText])}>{this.state.tertiaryText}</Stack.Item>: null}
+                                </Stack>
+                                <Stack className={itemStyles.rightStack}>
+                                    {this.state.actions.length > 0 ? <Stack.Item align='end' className={itemStyles.actionStack}>
+                                        {this.state.actions.map<JSX.Element>((action: number, index: number) =>
+                                            <Stack.Item key={index}>
+                                                <MioListItemAction action={action} parent={this.state.id} />
+                                            </Stack.Item>
+                                        )}
+                                    </Stack.Item>: null}
+                                    {this.state.metaText ? <Stack.Item align='end' className={classnames(['metaText', itemStyles.metaText])}>{this.state.metaText}</Stack.Item>: null}
+                                </Stack>
+                            </Stack>
+                        </div>
+                        {this.state.expanded && this.state.items.length > 0 ? 
+                            <ul className={itemStyles.items}>
+                                {this.state.items.map<JSX.Element>((id: number, index: number) =>
+                                    <li className={listStyles.item} key={index}>
+                                        <MioListItem id={id} />
+                                    </li>
+                                )}
+                            </ul>
+                        : null}
+                    </Stack>
+                </Stack.Item>
+        );
+    }
+
+    onClick(): void {
+        if (this.state.items.length > 0) {
+            this.setState({expanded: !this.state.expanded});
+        }
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export function renderMioListItem(item: MioListItem): JSX.Element {
+    return (
+        <MioListItem id={item.state.id} />
+    );
 }
 
 export interface MioListItemClasses {
@@ -124,9 +257,8 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
         overflow: 'hidden',
     },
     actionStack: {
-        // display: 'flex',
-        // flexDirection: 'column',
-        // background: palette.yellow,
+        display: 'flex',
+        flexDirection: 'row-reverse',
     },
     icon: {
         margin: 0,
@@ -190,110 +322,3 @@ const itemStyles: MioListItemClasses = mergeStyleSets({
         marginLeft: 5,
     },
 });
-
-export class MioListItem extends React.Component<MioListItemProps, MioListItemState> {
-
-    constructor(props: MioListItemProps) {
-        super(props);
-
-        this.state = {
-            id: props.id,
-            icon: props.icon,
-            primaryText: props.primaryText,
-            secondaryText: props.secondaryText,
-            tertiaryText: props.tertiaryText,
-            metaText: props.metaText,
-            actions: (props.actions != undefined ? Array.apply(null, props.actions.map(value => {
-                return new MioListItemAction({type: value});
-            })) : []),
-            items: (props.items != undefined ? Array.apply(null, props.items.map(value => {
-                return new MioListItem(value);
-            })) : []),
-            expanded: (props.expanded != undefined ? props.expanded : (props.items != undefined ? props.items.length > 0 : false)),
-            loading: false,
-        }
-
-        this.onClick = this.onClick.bind(this);
-
-    }
-
-    componentDidMount() {
-        const that = this;
-        this.setState({loading: true});
-
-        console.log('https://addin.eap4.me/load.php?t=' + this.state.id)
-        fetch('https://addin.eap4.me/load.php?t=' + this.state.id)
-            .then(response => response.json())
-            .then(function(data) {
-                that.setState({loading: false, items: data.map(obj => {
-                    console.log(obj);
-                    return new MioListItem({id: obj.id, icon: 'DocumentSet', secondaryText: obj.text, 
-                        tertiaryText: obj.description, metaText: obj.timestamp});
-                })});
-            }, function(reason) {
-                console.log('Fehler: "' + reason + '"');
-            })
-            .catch(function(error) {
-                console.log('Fehler: "' + error + '"');
-            });
-    }
-
-    render(): JSX.Element {
-        return (
-            <Stack.Item>
-                <Stack className={this.state.expanded ? classnames([itemStyles.expanded, itemStyles.cell]) : itemStyles.cell}>
-                    <div draggable={true} className={itemStyles.item}
-                        onClick={() => this.onClick()}
-                    >
-                        <Stack className={itemStyles.topStack}>
-                            <Stack style={{display: 'flex', flexDirection: 'column'}}>
-                                {this.state.icon != undefined ? <Stack.Item className={itemStyles.icon}><Icon iconName={this.state.icon}></Icon></Stack.Item>: null}
-                                {this.state.items.length > 0 ? <Icon className={itemStyles.chevron} iconName={(this.state.expanded ? 'ChevronDown' : 'ChevronUp')}></Icon> : null}
-                            </Stack>
-                            <Stack className={itemStyles.leftStack}>
-                                {this.state.primaryText ? <Stack.Item className={classnames(['primaryText', itemStyles.primaryText])}>{this.state.primaryText}</Stack.Item>: null}
-                                {this.state.secondaryText ? <Stack.Item className={classnames(['secondaryText', itemStyles.secondaryText])}>{this.state.secondaryText}</Stack.Item>: null}
-                                {this.state.tertiaryText ? <Stack.Item className={classnames(['tertiaryText', itemStyles.tertiaryText])}>{this.state.tertiaryText}</Stack.Item>: null}
-                            </Stack>
-                            <Stack className={itemStyles.rightStack}>
-                                {this.state.actions.length > 0 ? <Stack.Item align='end' className={itemStyles.actionStack}>
-                                    {this.state.actions.map<JSX.Element>((action: MioListItemAction, index: number) =>
-                                        <Stack.Item key={index}>
-                                            {renderMioListItemAction(action.props.type)}
-                                        </Stack.Item>
-                                        //return this.render_action(action, index)
-                                    )}
-                                </Stack.Item>: null}
-                                {this.state.metaText ? <Stack.Item align='end' className={classnames(['metaText', itemStyles.metaText])}>{this.state.metaText}</Stack.Item>: null}
-                            </Stack>
-                        </Stack>
-                    </div>
-                    {this.state.expanded && this.state.items.length > 0 ? 
-                        <ul className={itemStyles.items}>
-                            {this.state.items.map<JSX.Element>((item: MioListItem, index: number) =>
-                                <li className={listStyles.item} key={index}>
-                                    {renderMioListItem(item)}
-                                </li>
-                            )}
-                        </ul>
-                    : null}
-                </Stack>
-            </Stack.Item>
-        );
-    }
-
-    onClick(): void {
-        if (this.state.items.length > 0) {
-            this.setState({expanded: !this.state.expanded});
-        }
-    }
-
-}
-
-export function renderMioListItem(item: MioListItem): JSX.Element {
-    return (
-        <MioListItem id={item.state.id} icon={item.state.icon} primaryText={item.state.primaryText} secondaryText={item.state.secondaryText}
-            tertiaryText={item.state.tertiaryText} metaText={item.state.metaText} actions={[MioListItemActionType.Edit]}
-            items={item.props.items} />
-    );
-}
