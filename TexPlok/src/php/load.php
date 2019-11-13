@@ -17,19 +17,25 @@
     $group = $_GET["g"];
     
     // Attributes
-    $sql = "SELECT tbs.id FROM textblock AS tbs";
+    $sql = "SELECT tbs.id AS 'id' FROM textblock AS tbs";
     if (!is_null($actioninfo)) {
-        $sql = "SELECT a.id, a.name, a.icon FROM action AS a WHERE a.id = " . (string)$actioninfo;
+        $sql = "SELECT a.id AS 'id', a.name AS 'name', a.icon AS 'icon'
+            FROM action AS a
+            WHERE a.id = " . (string)$actioninfo;
     } elseif (!is_null($action)) {
-        $sql = "SELECT tba.action FROM textblock_action AS tba
-            WHERE tba.parent = " . (string)$action;
+        $sql = "SELECT tba.action AS 'action'
+            FROM textblock_action AS tba
+            INNER JOIN action AS a ON tba.action = a.id
+            WHERE tba.parent = " . (string)$action . "
+            ORDER BY a.orderindex ASC";
     } elseif (!is_null($info)) {
-        $sql = "SELECT i.icon, tbs.name, tbs.text, tbs.description, tbs.author, tbs.timestamp, tbs.type FROM textblock AS tbs
+        $sql = "SELECT i.icon AS 'icon', tbs.name AS 'name', tbs.text AS 'text', tbs.description AS 'description', 
+                tbs.author AS 'author', tbs.timestamp AS 'timestamp', tbs.type AS 'type' FROM textblock AS tbs
             INNER JOIN textblock_icon AS tbi ON tbi.parent = tbs.id
             INNER JOIN icon AS i ON tbi.icon = i.id
             WHERE tbs.id = " . (string)$info;
     } elseif (!is_null($textblock)) {
-        $sql = "SELECT tbs.id, tbs.text, tbs.description, tbs.author, tbs.timestamp, tbs.Type FROM textblock_child AS tbc
+        $sql = "SELECT tbs.id AS 'id' FROM textblock_child AS tbc
             INNER JOIN textblock AS tbs ON tbs.id = tbc.child
             WHERE tbc.parent = " . (string)$textblock;
     }

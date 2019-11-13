@@ -12,7 +12,7 @@ export function classnames(classes: string[]): string {
     return classnames;
 }
 
-export function fetchdata(url: string, successCallback, failCallback, logging = true) {
+export function fetchdata(url: string, successCallback, failCallback, errorCallback, logging = true) {
     console.log('Request from "' + url + '" started...');
     fetch(url)
     .then(response => response.json())
@@ -25,6 +25,6 @@ export function fetchdata(url: string, successCallback, failCallback, logging = 
     })
     .catch(function(error) {
         console.error('Error: "' + error + '"');
-        failCallback(error);
+        errorCallback(error);
     });
 }

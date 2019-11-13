@@ -6,15 +6,6 @@ import { classnames, fetchdata, urlActionInfo } from './Helper';
 const theme: ITheme = getTheme();
 //const { palette } = theme;
 
-export enum MioListItemActionType {
-    Edit, Feedback, Delete,
-}
-
-export const MioListItemActions = {
-    [MioListItemActionType.Edit]: { text: 'Edit', icon: 'PageEdit', },
-    [MioListItemActionType.Feedback]: { text: 'Feedback', icon: 'Feedback', },
-    [MioListItemActionType.Delete]: { text: 'Delete', icon: 'Delete', },
-}
 
 export interface MioListItemActionProps {
     action: number;
@@ -27,6 +18,7 @@ export interface MioListItemActionState {
     text: string;
     icon: string;
     loading: boolean;
+    error: string;
 }
 
 export class MioListItemAction extends React.Component<MioListItemActionProps, MioListItemActionState> {
@@ -39,6 +31,7 @@ export class MioListItemAction extends React.Component<MioListItemActionProps, M
             text: '',
             icon: '',
             loading: false,
+            error: undefined,
         }
         this.onClick = this.onClick.bind(this);
     }
@@ -47,7 +40,7 @@ export class MioListItemAction extends React.Component<MioListItemActionProps, M
         const that = this;
         this.setState({loading: true});
         fetchdata(format(urlActionInfo, this.state.action),
-        function(data) {
+        function(data: any) {
             that.setState({
                 text: data[0].name,
                 icon: data[0].icon,
@@ -55,6 +48,8 @@ export class MioListItemAction extends React.Component<MioListItemActionProps, M
             });
         }, function() {
             that.setState({loading: false});
+        }, function(error: any) {
+            that.setState({error: error, loading: false});
         });
     }
 

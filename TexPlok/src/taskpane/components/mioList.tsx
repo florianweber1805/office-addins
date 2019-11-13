@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { MioListItem } from './mioListItem';
 import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabric-react/lib/Styling';
-import { Stack, SearchBox, IconButton, Spinner } from 'office-ui-fabric-react';
+import { Stack, SearchBox, IconButton, Spinner, IContextualMenuProps } from 'office-ui-fabric-react';
 import { fetchdata, urlDefault } from './Helper';
-import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
 
 const theme: ITheme = getTheme();
 //const { palette } = theme;
@@ -13,59 +12,71 @@ export interface MioListProps {
 }
 
 export interface MioListState {
-    items: number[]; loading: boolean; search: string; edit: number;
+    items: number[];
+    search: string;
+    edit: number;
+    loading: boolean;
+    error: string;
 }
+
+const menuProps: IContextualMenuProps = {
+    items: [
+        {
+            key: 'test',
+            text: 'test',
+            iconProps: {iconName: 'Add'},
+        },
+    ],
+};
 
 export class MioList extends React.Component<MioListProps, MioListState> {
 
     constructor(props: MioListProps) {
         super(props);
         this.state = {
-            items: new Array<number>(), loading: false,
-            search: '',
-            edit: 0,
+            items: new Array<number>(),
+            loading: true,
+            search: undefined,
+            edit: undefined,
+            error: undefined,
         }
         this.search = this.search.bind(this);
     }
 
     componentDidMount() {
         const that = this;
-        this.setState({loading: true});
-        fetchdata(urlDefault,
-        function(data) { 
-            that.setState({
-                loading: false,
-                items: data.map(obj => obj.id)
-            });
+        fetchdata(urlDefault, function(data: any) { 
+            that.setState({items: data.map(obj => obj.id), loading: false});
         }, function() {
             that.setState({loading: false});
+        }, function(error: any) {
+            that.setState({error: error, loading: false});
         });
     }
 
     render(): JSX.Element {
         return (
-            this.state.loading ? 
-                <Spinner></Spinner>
-            :
-                <div className={listStyles.cell}>
-                    <Stack className={listStyles.controls}>
-                        <Stack.Item>
-                            <IconButton primary={true} iconProps={{iconName: 'GlobalNavButton'}}></IconButton>
-                        </Stack.Item>
-                        <Stack.Item grow={3}>
-                            <SearchBox className={listStyles.searchBox} placeholder="Search" onSearch={newValue => this.search(newValue)}/>
-                        </Stack.Item>
-                    </Stack>
-                    <div className={listStyles.wrapper}>
-                        <ul className={listStyles.list}>
-                            {this.state.items.map((id: number, index: number) =>
-                                <li className={listStyles.item} key={index}>
-                                    <MioListItem id={id} />
-                                </li>
-                            )}
-                        </ul>
+            this.state.loading ? <Spinner></Spinner> :
+                this.state.error != undefined ? <div></div> :
+                    <div className={listStyles.cell}>
+                        <Stack className={listStyles.controls}>
+                            <Stack.Item>
+                                <IconButton menuProps={menuProps} primary={true} iconProps={{iconName: 'GlobalNavButton'}}></IconButton>
+                            </Stack.Item>
+                            <Stack.Item grow={3}>
+                                <SearchBox className={listStyles.searchBox} placeholder="Search" onSearch={newValue => this.search(newValue)}/>
+                            </Stack.Item>
+                        </Stack>
+                        <div className={listStyles.wrapper}>
+                            <ul className={listStyles.list}>
+                                {this.state.items.map((id: number, index: number) =>
+                                    <li className={listStyles.item} key={index}>
+                                        <MioListItem id={id} />
+                                    </li>
+                                )}
+                            </ul>
+                        </div>
                     </div>
-                </div>
         );
     }
 
@@ -105,8 +116,8 @@ export const listStyles: MioListClasses = mergeStyleSets({
         getFocusStyle(theme, { inset: -1 }),
         {
             height: '100%',
-            position: 'absolute',
-            left: 0,
+            position: 'relative',
+            //left: 0,
             width: '100%',
             overflow: 'hidden',
             display: 'flex',
