@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { MioListItem } from './mioListItem';
 import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabric-react/lib/Styling';
-import { Stack, SearchBox, IconButton, Spinner, IContextualMenuProps } from 'office-ui-fabric-react';
+import { Stack, SearchBox, IconButton, IContextualMenuProps } from 'office-ui-fabric-react';
 import { fetchdata, urlDefault } from './Helper';
+import Progress from './Progress'
 
 const theme: ITheme = getTheme();
 //const { palette } = theme;
@@ -25,6 +26,11 @@ const menuProps: IContextualMenuProps = {
             key: 'test',
             text: 'test',
             iconProps: {iconName: 'Add'},
+        },
+        {
+            key: 'refresh',
+            text: 'Refresh',
+            iconProps: {iconName: 'Refresh'},
         },
     ],
 };
@@ -56,7 +62,7 @@ export class MioList extends React.Component<MioListProps, MioListState> {
 
     render(): JSX.Element {
         return (
-            this.state.loading ? <Spinner></Spinner> :
+            this.state.loading ? <Progress logo={'https://www.kjh-mio.de/s/misc/logo.jpg?t=1573588989'} title={'TexPlok'} message={'Loading...'} /> :
                 this.state.error != undefined ? <div></div> :
                     <div className={listStyles.cell}>
                         <Stack className={listStyles.controls}>

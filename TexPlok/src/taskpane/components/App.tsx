@@ -4,7 +4,6 @@ import { isOfficeInitialized } from "..";
 import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabric-react/lib/Styling';
 import { Stack } from "office-ui-fabric-react";
 
-
 const theme: ITheme = getTheme();
 //const { palette } = theme;
 

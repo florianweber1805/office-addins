@@ -21,7 +21,8 @@ const render = Component => {
 };
 
 /* Render application after Office initializes */
-Office.initialize = () => {
+Office.initialize = (reason: Office.InitializationReason) => {
+    console.log(reason);
     isOfficeInitialized = true;
     render(App);
 };

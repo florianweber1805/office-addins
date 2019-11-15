@@ -84,6 +84,12 @@ module.exports = async (env, options)  => {
           from: './src/php',
         },
       ]),
+      new CopyWebpackPlugin([
+        {
+          from: './node_modules/@microsoft/office-js/dist',
+          to: 'assets/office-js',
+        },
+      ]),
     ],
     devServer: {
       headers: {

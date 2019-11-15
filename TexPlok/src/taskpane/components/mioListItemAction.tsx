@@ -68,7 +68,8 @@ export class MioListItemAction extends React.Component<MioListItemActionProps, M
 
     onClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
         //consoleLog(format('Action "{0}" pressed!', this.text));
-        var strWindowFeatures = "location=yes,height=570,width=520,scrollbars=yes,status=yes";
+        
+        var strWindowFeatures = "location=yes, height=" + screen.availHeight + ", width=" + screen.availWidth + ", scrollbars=yes, status=yes";
         window.open('https://addin.eap4.me/taskpane.html', '_blank', strWindowFeatures);
         event.stopPropagation();
     }
