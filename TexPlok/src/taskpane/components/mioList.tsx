@@ -9,7 +9,7 @@ const theme: ITheme = getTheme();
 //const { palette } = theme;
 
 export interface MioListProps {
-    items?: MioListItem[];
+    onEdit: (item: MioListItem) => void;
 }
 
 export interface MioListState {
@@ -47,6 +47,7 @@ export class MioList extends React.Component<MioListProps, MioListState> {
             error: undefined,
         }
         this.search = this.search.bind(this);
+        this.onEdit = this.onEdit.bind(this);
     }
 
     componentDidMount() {
@@ -77,13 +78,17 @@ export class MioList extends React.Component<MioListProps, MioListState> {
                             <ul className={listStyles.list}>
                                 {this.state.items.map((id: number, index: number) =>
                                     <li className={listStyles.item} key={index}>
-                                        <MioListItem id={id} />
+                                        <MioListItem onChange={function(item){console.log(item);}} edit={false} onEdit={this.onEdit} id={id} />
                                     </li>
                                 )}
                             </ul>
                         </div>
                     </div>
         );
+    }
+
+    onEdit(item: MioListItem) {
+        this.props.onEdit(item);
     }
 
     search(value: string) {

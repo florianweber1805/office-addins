@@ -2,18 +2,20 @@ import * as React from 'react';
 import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabric-react/lib/Styling';
 import { IconButton, format, Spinner } from 'office-ui-fabric-react';
 import { classnames, fetchdata, urlActionInfo } from './Helper';
+import { MioActionType } from './mioAction';
 
 const theme: ITheme = getTheme();
 //const { palette } = theme;
 
 
 export interface MioListItemActionProps {
-    action: number;
+    action: MioActionType;
     parent: number;
+    onAction: (action: MioActionType) => void;
 }
 
 export interface MioListItemActionState {
-    action: number;
+    action: MioActionType;
     parent: number;
     text: string;
     icon: string;
@@ -52,12 +54,10 @@ export class MioListItemAction extends React.Component<MioListItemActionProps, M
             that.setState({error: error, loading: false});
         });
     }
-
+    
     render(): JSX.Element {
         return (
-            this.state.loading ? 
-                <Spinner></Spinner>
-            :
+            this.state.loading ? <Spinner></Spinner> :
                 <div className={actionStyles.cell}>
                     <IconButton label={this.state.text} iconProps={{iconName: this.state.icon}} className={classnames(['action', actionStyles.button])}
                         onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => this.onClick(event)}
@@ -67,14 +67,12 @@ export class MioListItemAction extends React.Component<MioListItemActionProps, M
     }
 
     onClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
-        //consoleLog(format('Action "{0}" pressed!', this.text));
-        
-        var strWindowFeatures = "location=yes, height=" + screen.availHeight + ", width=" + screen.availWidth + ", scrollbars=yes, status=yes";
-        window.open('https://addin.eap4.me/taskpane.html', '_blank', strWindowFeatures);
+        this.props.onAction(this.state.action);
         event.stopPropagation();
     }
 
 }
+
 
 
 

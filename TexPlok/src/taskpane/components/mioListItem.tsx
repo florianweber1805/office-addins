@@ -5,12 +5,17 @@ import { MioListItemAction } from './mioListItemAction';
 import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
 import { classnames, fetchdata, urlInfo, urlChildren, urlAction } from './Helper';
 import { listStyles } from './mioList';
+import { MioActionType } from './mioAction';
+import { MioTextfield } from './mioTextfield';
 
 const theme: ITheme = getTheme();
 const { palette } = theme;
 
 export interface MioListItemProps {
     id: number;
+    onEdit: (item: MioListItem) => void;
+    onChange: (item: MioListItem) => void;
+    edit: boolean;
 }
 
 export interface MioListItemState {
@@ -20,11 +25,13 @@ export interface MioListItemState {
     secondaryText: string;
     tertiaryText: string;
     metaText: string;
-    actions: number[];
+    actions: MioActionType[];
     items: number[];
     expanded: boolean;
     loading: number;
     error: string;
+    edit: boolean;
+    refresh: boolean;
 }
 
 export class MioListItem extends React.Component<MioListItemProps, MioListItemState> {
@@ -38,16 +45,21 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
             secondaryText: undefined,
             tertiaryText: undefined,
             metaText: undefined,
-            actions: new Array<number>(),
+            actions: new Array<MioActionType>(),
             items: new Array<number>(),
             expanded: false,
             loading: 3,
             error: undefined,
+            edit: props.edit,
+            refresh: false,
         }
+        this.onAction = this.onAction.bind(this);
         this.onClick = this.onClick.bind(this);
+        this.onEdit = this.onEdit.bind(this);
+        this.onChange = this.onChange.bind(this);
     }
 
-    componentDidMount() {
+    fetchdata() {
         const that = this;
 
         // Values
@@ -70,19 +82,36 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
         fetchdata(format(urlChildren, this.state.id), function(data: any) {
             that.setState({items: data.map(obj => obj.id), loading: that.state.loading - 1});
         }, function() {
-            that.setState({loading: that.state.loading - 1});
+            that.setState({loading: that.state.loading - 1, items: new Array<number>()});
         }, function(error: any) {
-            that.setState({error: error, loading: that.state.loading - 1});
+            that.setState({error: error, items: new Array<number>(), loading: that.state.loading - 1});
         });
 
         // Actions
         fetchdata(format(urlAction, this.state.id), function(data: any) {
             that.setState({actions: data.map(obj => obj.action), loading: that.state.loading - 1});
         }, function() {
-            that.setState({loading: that.state.loading - 1});
+            that.setState({loading: that.state.loading - 1, actions: new Array<MioActionType>()});
         }, function(error: any) {
-            that.setState({error: error, loading: that.state.loading - 1});
+            that.setState({error: error, actions: new Array<MioActionType>(), loading: that.state.loading - 1});
         });
+
+        that.setState({refresh: !that.state.refresh});
+    }
+
+    componentWillReceiveProps(props: MioListItemProps) {
+        if (props.id != this.state.id) {
+            this.setState(function(state, props) {
+                console.log(state);
+                return {id: props.id};
+            }, function() {
+                this.fetchdata();
+            });
+        }
+    }
+
+    componentDidMount() {
+        this.fetchdata();
     }
 
     renderError(): JSX.Element {
@@ -111,19 +140,36 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
                                         {this.state.items.length > 0 ? <Icon className={itemStyles.chevron} iconName={(this.state.expanded ? 'ChevronDown' : 'ChevronUp')}></Icon> : null}
                                     </Stack>
                                     <Stack className={itemStyles.leftStack}>
-                                        {this.state.primaryText ? <Stack.Item className={classnames(['primaryText', itemStyles.primaryText])}>{this.state.primaryText}</Stack.Item>: null}
-                                        {this.state.secondaryText ? <Stack.Item className={classnames(['secondaryText', itemStyles.secondaryText])}>{this.state.secondaryText}</Stack.Item>: null}
-                                        {this.state.tertiaryText ? <Stack.Item className={classnames(['tertiaryText', itemStyles.tertiaryText])}>{this.state.tertiaryText}</Stack.Item>: null}
+
+                                        {this.state.primaryText ? <MioTextfield onChange={this.onChange} className={classnames(['primaryText', itemStyles.primaryText])} text={this.state.primaryText} edit={this.state.edit} /> : null}
+
+                                        {this.state.secondaryText ? <MioTextfield onChange={this.onChange} className={classnames(['secondaryText', itemStyles.secondaryText])} text={this.state.secondaryText} edit={this.state.edit} /> : null}
+
+                                        {this.state.tertiaryText ? <MioTextfield onChange={this.onChange} className={classnames(['tertiaryText', itemStyles.tertiaryText])} text={this.state.tertiaryText} edit={this.state.edit} /> : null}
+
+                                        {/* {this.state.primaryText ?
+                                            this.state.edit ? <Stack.Item><TextField className={classnames(['primaryText', itemStyles.primaryText])} multiline autoAdjustHeight>{this.state.primaryText}</TextField></Stack.Item>
+                                            : <Stack.Item><Label className={classnames(['primaryText', itemStyles.primaryText])}>{this.state.primaryText}</Label></Stack.Item>
+                                        : null} */}
+
+                                        {/* {this.state.secondaryText ?
+                                            this.state.edit ? <Stack.Item><TextField className={classnames(['secondaryText', itemStyles.secondaryText])} multiline autoAdjustHeight>{this.state.secondaryText}</TextField></Stack.Item>
+                                            : <Stack.Item><Label className={classnames(['secondaryText', itemStyles.secondaryText])}>{this.state.secondaryText}</Label></Stack.Item>
+                                        : null} */}
+
+                                        {/* {this.state.tertiaryText ? <Stack.Item className={classnames(['tertiaryText', itemStyles.tertiaryText])}>{this.state.tertiaryText}</Stack.Item>: null} */}
                                     </Stack>
                                     <Stack className={itemStyles.rightStack}>
-                                        {this.state.actions.length > 0 ? <Stack.Item align='end' className={itemStyles.actionStack}>
-                                            {this.state.actions.map<JSX.Element>((action: number, index: number) =>
+                                        {this.state.actions.length > 0 && !this.state.edit ? <Stack.Item align='end' className={itemStyles.actionStack}>
+                                            {this.state.actions.map<JSX.Element>((action: MioActionType, index: number) =>
                                                 <Stack.Item key={index}>
-                                                    <MioListItemAction action={action} parent={this.state.id} />
+                                                    <MioListItemAction onAction={this.onAction} action={action} parent={this.state.id} />
                                                 </Stack.Item>
                                             )}
                                         </Stack.Item>: null}
-                                        {this.state.metaText ? <Stack.Item align='end' className={classnames(['metaText', itemStyles.metaText])}>{this.state.metaText}</Stack.Item>: null}
+
+                                        {this.state.metaText ? <MioTextfield onChange={this.onChange} className={classnames(['metaText', itemStyles.metaText])} text={this.state.metaText} edit={this.state.edit} /> : null}
+                                        {/* {this.state.metaText ? <Stack.Item align='end' className={classnames(['metaText', itemStyles.metaText])}>{this.state.metaText}</Stack.Item>: null} */}
                                     </Stack>
                                 </Stack>
                             </div>
@@ -131,7 +177,7 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
                                 <ul className={itemStyles.items}>
                                     {this.state.items.map<JSX.Element>((id: number, index: number) =>
                                         <li className={listStyles.item} key={index}>
-                                            <MioListItem id={id} />
+                                            <MioListItem onChange={this.onChange} edit={this.state.edit} onEdit={(item: MioListItem) => this.onEdit(item)} id={id} />
                                         </li>
                                     )}
                                 </ul>
@@ -145,6 +191,20 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
         if (this.state.items.length > 0) {
             this.setState({expanded: !this.state.expanded});
         }
+    }
+
+    onAction(action: MioActionType): void {
+        if (action == MioActionType.edit) {
+            this.onEdit(this);
+        }
+    }
+
+    onEdit(item: MioListItem) {
+        this.props.onEdit(item);
+    }
+
+    onChange() {
+        this.props.onChange(this);
     }
 
 }
