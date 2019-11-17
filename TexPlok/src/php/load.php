@@ -30,7 +30,7 @@
             ORDER BY a.orderindex ASC";
     } elseif (!is_null($info)) {
         $sql = "SELECT i.icon AS 'icon', tbs.name AS 'name', tbs.text AS 'text', tbs.description AS 'description', 
-                tbs.author AS 'author', tbs.timestamp AS 'timestamp', tbs.type AS 'type' FROM textblock AS tbs
+                tbs.author AS 'author', CONVERT(tbs.timestamp, DATE) AS 'timestamp', tbs.type AS 'type' FROM textblock AS tbs
             INNER JOIN textblock_icon AS tbi ON tbi.parent = tbs.id
             INNER JOIN icon AS i ON tbi.icon = i.id
             WHERE tbs.id = " . (string)$info;

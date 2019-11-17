@@ -4,6 +4,8 @@ export const urlChildren = urlDefault + '?t={0}';
 export const urlAction = urlDefault + '?a={0}';
 export const urlActionInfo = urlDefault + '?ai={0}';
 
+export const mioLogo = 'https://www.kjh-mio.de/s/misc/logo.jpg?t=1573588989';
+
 export function classnames(classes: string[]): string {
     var classnames = '';
     for (var i = 0; i < classes.length; i++) {
@@ -27,4 +29,25 @@ export function fetchdata(url: string, successCallback, failCallback, errorCallb
         console.error('Error: "' + error + '"');
         errorCallback(error);
     });
+}
+
+export function GetURLParameter(sParam)
+{
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++) 
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam) 
+        {
+            return sParameterName[1];
+        }
+    }
+    return '';
+}​
+
+export function openEditorWindow(object: any) {
+    console.log(typeof object);
+    // var strWindowFeatures = "location=no, height=" + screen.height + ", width=" + screen.width + ", scrollbars=no, status=no";
+    // window.open('https://addin.eap4.me/taskpane.html?edit=' + id, '_blank', strWindowFeatures);
 }

@@ -1,5 +1,9 @@
 import * as React from 'react';
 import { MioListItem } from './mioListItem';
+import { mergeStyleSets, ITheme, getTheme } from 'office-ui-fabric-react/lib/Styling';
+
+const theme: ITheme = getTheme();
+const { palette } = theme;
 
 export interface MioEditorProps {
     item: number;
@@ -28,9 +32,10 @@ export class MioEditor extends React.Component<MioEditorProps, MioEditorState> {
     }
 
     render(): JSX.Element {
+        console.log(palette);
         return (
-            <div style={{padding: 20}}>
-                <MioListItem onChange={this.onChange} edit={true} onEdit={function(item: MioListItem){console.log(item.state.id);}} id={this.state.item} />
+            <div className={styles.editor}>
+                <MioListItem expanded={true} onChange={this.onChange} edit={true} onEdit={function(item: MioListItem){console.log(item.state.id);}} id={this.state.item} />
             </div>
         );
     }
@@ -40,3 +45,13 @@ export class MioEditor extends React.Component<MioEditorProps, MioEditorState> {
     }
 
 }
+
+interface MioEditorClasses {
+    editor: string;
+}
+
+const styles: MioEditorClasses = mergeStyleSets({
+    editor: {
+        padding: 20,
+    },
+})

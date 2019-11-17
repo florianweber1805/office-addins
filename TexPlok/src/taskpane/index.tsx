@@ -6,9 +6,7 @@ import { AppContainer } from "react-hot-loader";
 import { initializeIcons } from "office-ui-fabric-react/lib/Icons";
 
 initializeIcons();
-
 export let isOfficeInitialized = false;
-
 const title = "TexPlok";
 
 const render = Component => {
@@ -21,8 +19,7 @@ const render = Component => {
 };
 
 /* Render application after Office initializes */
-Office.initialize = (reason: Office.InitializationReason) => {
-    console.log(reason);
+Office.initialize = () => {
     isOfficeInitialized = true;
     render(App);
 };

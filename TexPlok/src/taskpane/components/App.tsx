@@ -1,92 +1,99 @@
 import * as React from "react";
 import { MioList } from "./mioList";
 import { isOfficeInitialized } from "..";
-import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabric-react/lib/Styling';
-import { Stack } from "office-ui-fabric-react";
+//import { ITheme, getTheme } from 'office-ui-fabric-react/lib/Styling';
 import { MioEditor } from "./mioEditor";
 import { MioListItem } from "./mioListItem";
+import { GetURLParameter } from './Helper';
+import SplitPane from "react-split-pane";
+import "./SplitPane.css";
+import { mergeStyleSets, ITheme, getTheme } from "@uifabric/styling";
 
 const theme: ITheme = getTheme();
-//const { palette } = theme;
+const { palette } = theme;
 
-export interface AppProps {
-	
-}
-
+export interface AppProps {}
 export interface AppState {
 	edit: number;
 }
 
 export class App extends React.Component<AppProps, AppState> {
 	
+	// ██████╗ ██████╗ ███╗   ███╗██████╗  ██████╗ ███╗   ██╗███████╗███╗   ██╗████████╗
+    // ██╔════╝██╔═══██╗████╗ ████║██╔══██╗██╔═══██╗████╗  ██║██╔════╝████╗  ██║╚══██╔══╝
+    // ██║     ██║   ██║██╔████╔██║██████╔╝██║   ██║██╔██╗ ██║█████╗  ██╔██╗ ██║   ██║   
+    // ██║     ██║   ██║██║╚██╔╝██║██╔═══╝ ██║   ██║██║╚██╗██║██╔══╝  ██║╚██╗██║   ██║   
+    // ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║     ╚██████╔╝██║ ╚████║███████╗██║ ╚████║   ██║   
+    //  ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝      ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚═╝  ╚═══╝   ╚═╝   
+
 	constructor(props: AppProps) {
-		super(props)
+		super(props);
 		this.state = {
-			edit: 0,
+			edit: Number(GetURLParameter('edit')) || 0,
 		}
 		this.onEdit = this.onEdit.bind(this);
+		this.renderEditor = this.renderEditor.bind(this);
+		this.renderList = this.renderList.bind(this);
 	}
 
-	render(): JSX.Element {
-		console.log(this.state.edit);
+	// ██████╗ ███████╗███╗   ██╗██████╗ ███████╗██████╗ 
+    // ██╔══██╗██╔════╝████╗  ██║██╔══██╗██╔════╝██╔══██╗
+    // ██████╔╝█████╗  ██╔██╗ ██║██║  ██║█████╗  ██████╔╝
+    // ██╔══██╗██╔══╝  ██║╚██╗██║██║  ██║██╔══╝  ██╔══██╗
+    // ██║  ██║███████╗██║ ╚████║██████╔╝███████╗██║  ██║
+    // ╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝
+
+	renderEditor(): JSX.Element {
+		return (<div className={styles.editor}><MioEditor item={this.state.edit} /></div>);
+	}
+
+	renderList(): JSX.Element {
+		return (<div className={styles.list}><MioList onEdit={this.onEdit} /></div>);
+	}
+
+	renderStandalone(): JSX.Element {
 		return (
-			<Stack className={styles.stack} verticalFill={true}>
-				{isOfficeInitialized === false && this.state.edit > 0 ? 
-					<Stack.Item className={styles.editor} align='start' verticalFill={true}>
-						<MioEditor item={this.state.edit} />
-					</Stack.Item>
-				: null}
-				<Stack.Item className={styles.list} align='end' verticalFill={true}>
-					<MioList onEdit={this.onEdit} />
-				</Stack.Item>
-			</Stack>
+			<SplitPane style={{position: 'absolute'}} split='vertical' defaultSize={500} minSize={250} maxSize={750} primary="second">
+				{!isOfficeInitialized ? this.renderEditor() : null}
+				{this.renderList()}
+			</SplitPane>
 		);
 	}
 
+	render(): JSX.Element {
+		console.log(palette);
+		return (
+			!isOfficeInitialized ? this.renderStandalone() : this.renderList()
+		);
+	}
+
+	// ███████╗██╗   ██╗███████╗███╗   ██╗████████╗███████╗
+    // ██╔════╝██║   ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝
+    // █████╗  ██║   ██║█████╗  ██╔██╗ ██║   ██║   ███████╗
+    // ██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║╚██╗██║   ██║   ╚════██║
+    // ███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║   ███████║
+    // ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
+
 	onEdit(item: MioListItem) {
 		console.log(item.state.id);
-		this.setState({edit: item.state.id});
+		if (!isOfficeInitialized) {
+			this.setState({edit: item.state.id});
+		} else {
+			var strWindowFeatures = "location=no, height=" + screen.height + ", width=" + screen.width + ", scrollbars=no, status=no";
+        	window.open('https://addin.eap4.me/taskpane.html?edit=' + item.state.id, '_blank', strWindowFeatures);
+		}
 	}
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
 export interface MioListItemClasses {
-	stack: string;
 	editor: string;
 	list: string;
 }
 
 const styles: MioListItemClasses = mergeStyleSets({
-	stack: [
-        getFocusStyle(theme, { inset: -1 }),
-        {
-            height: '100%',
-			width: '100%',
-			position: 'absolute',
-			overflow: 'hidden',
-			boxSizing: 'border-box',
-            display: 'flex',
-			flexDirection: 'row',
-        },
-	],
-	editor: {
-		width: '100%',
-		height: '100%',
-	},
+	editor: {},
 	list: {
-		width: 'auto',
-		maxWidth: '100%',
 		height: '100%',
 	},
 });
