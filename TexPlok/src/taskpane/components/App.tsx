@@ -1,20 +1,17 @@
 import * as React from "react";
+import SplitPane from "react-split-pane";
 import { MioList } from "./mioList";
 import { isOfficeInitialized } from "..";
-//import { ITheme, getTheme } from 'office-ui-fabric-react/lib/Styling';
-import { MioEditor } from "./mioEditor";
 import { MioListItem } from "./mioListItem";
-import { GetURLParameter } from './Helper';
-import SplitPane from "react-split-pane";
+import { GetURLParameter, openEditorWindow } from './Helper';
+import { mergeStyleSets } from "@uifabric/styling";
+//import { MioEditorPage } from "./mioEditorPage";
 import "./SplitPane.css";
-import { mergeStyleSets, ITheme, getTheme } from "@uifabric/styling";
-
-const theme: ITheme = getTheme();
-const { palette } = theme;
+import { MioEditor } from "./mioEditor";
 
 export interface AppProps {}
 export interface AppState {
-	edit: number;
+	edit: number[];
 }
 
 export class App extends React.Component<AppProps, AppState> {
@@ -29,11 +26,12 @@ export class App extends React.Component<AppProps, AppState> {
 	constructor(props: AppProps) {
 		super(props);
 		this.state = {
-			edit: Number(GetURLParameter('edit')) || 0,
+			edit: new Array<number>(Number(GetURLParameter('edit'))) || [],
 		}
-		this.onEdit = this.onEdit.bind(this);
 		this.renderEditor = this.renderEditor.bind(this);
 		this.renderList = this.renderList.bind(this);
+		this.renderStandalone = this.renderStandalone.bind(this);
+		this.onEdit = this.onEdit.bind(this);	
 	}
 
 	// ██████╗ ███████╗███╗   ██╗██████╗ ███████╗██████╗ 
@@ -43,29 +41,19 @@ export class App extends React.Component<AppProps, AppState> {
     // ██║  ██║███████╗██║ ╚████║██████╔╝███████╗██║  ██║
     // ╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝
 
-	renderEditor(): JSX.Element {
-		return (<div className={styles.editor}><MioEditor item={this.state.edit} /></div>);
-	}
+	//renderEditor(): JSX.Element { return (<div className={styles.editor}><MioEditorPage item={this.state.edit} /></div>); }
+	renderEditor(): JSX.Element { return (<div className={styles.editor}><MioEditor edit={this.state.edit} /></div>); }
 
-	renderList(): JSX.Element {
-		return (<div className={styles.list}><MioList onEdit={this.onEdit} /></div>);
-	}
+	renderList(): JSX.Element { return (<div className={styles.list}><MioList onEdit={this.onEdit} /></div>); }
 
 	renderStandalone(): JSX.Element {
-		return (
-			<SplitPane style={{position: 'absolute'}} split='vertical' defaultSize={500} minSize={250} maxSize={750} primary="second">
-				{!isOfficeInitialized ? this.renderEditor() : null}
-				{this.renderList()}
-			</SplitPane>
-		);
+		return (<SplitPane className={styles.splitpane} split='vertical' defaultSize={500} minSize={250} maxSize={750} primary="second">
+			{!isOfficeInitialized ? this.renderEditor() : null}
+			{this.renderList()}
+		</SplitPane>);
 	}
 
-	render(): JSX.Element {
-		console.log(palette);
-		return (
-			!isOfficeInitialized ? this.renderStandalone() : this.renderList()
-		);
-	}
+	render(): JSX.Element { return (<div className={styles.frame}>{!isOfficeInitialized ? this.renderStandalone() : this.renderList()}</div>); }
 
 	// ███████╗██╗   ██╗███████╗███╗   ██╗████████╗███████╗
     // ██╔════╝██║   ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝
@@ -75,25 +63,54 @@ export class App extends React.Component<AppProps, AppState> {
     // ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
 
 	onEdit(item: MioListItem) {
-		console.log(item.state.id);
 		if (!isOfficeInitialized) {
-			this.setState({edit: item.state.id});
+			this.setState(function() {
+				if (!this.state.edit.includes(item.state.id)) {
+					var edit = this.state.edit;
+					edit.push(item.state.id);
+					return {edit: edit};
+				}
+				return {edit: this.state.edit};
+			});
 		} else {
-			var strWindowFeatures = "location=no, height=" + screen.height + ", width=" + screen.width + ", scrollbars=no, status=no";
-        	window.open('https://addin.eap4.me/taskpane.html?edit=' + item.state.id, '_blank', strWindowFeatures);
+			openEditorWindow(item.state.id);
 		}
 	}
 
 }
 
+// ███████╗████████╗██╗   ██╗██╗     ███████╗███████╗
+// ██╔════╝╚══██╔══╝╚██╗ ██╔╝██║     ██╔════╝██╔════╝
+// ███████╗   ██║    ╚████╔╝ ██║     █████╗  ███████╗
+// ╚════██║   ██║     ╚██╔╝  ██║     ██╔══╝  ╚════██║
+// ███████║   ██║      ██║   ███████╗███████╗███████║
+// ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚══════╝╚══════╝
+
 export interface MioListItemClasses {
+	frame: string;
+	splitpane: string;
 	editor: string;
 	list: string;
 }
 
 const styles: MioListItemClasses = mergeStyleSets({
-	editor: {},
+	frame: {
+		//position: 'absolute',
+		width: '100%',
+		height: '100%',
+		margin: 0,
+		padding: 0,
+	},
+	splitpane: {
+		width: '100%',
+		height: '100%',
+	},
+	editor: {
+		width: '100%',
+		height: '100%',
+	},
 	list: {
+		width: '100%',
 		height: '100%',
 	},
 });

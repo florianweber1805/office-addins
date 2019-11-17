@@ -1,16 +1,19 @@
 import * as React from 'react';
-import { MioListItem } from './mioListItem';
-import { mergeStyleSets, ITheme, getTheme } from 'office-ui-fabric-react/lib/Styling';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
+import { MioEditorPage } from './mioEditorPage';
+import { mergeStyleSets, ITheme, getTheme } from '@uifabric/styling';
 
 const theme: ITheme = getTheme();
 const { palette } = theme;
 
 export interface MioEditorProps {
-    item: number;
+    edit?: number[];
 }
 
 export interface MioEditorState {
-    item: number;
+    edit: number[];
+    index: number;
 }
 
 export class MioEditor extends React.Component<MioEditorProps, MioEditorState> {
@@ -18,40 +21,44 @@ export class MioEditor extends React.Component<MioEditorProps, MioEditorState> {
     constructor(props: MioEditorProps) {
         super(props);
         this.state = {
-            item: props.item,
-        }
-        this.onChange = this.onChange.bind(this);
-    }
-
-    componentWillReceiveProps(props: MioEditorProps) {
-        if (props.item != this.state.item) {
-            console.log(props.item + " <> " + this.state.item);
-            this.setState({item: props.item});
-            this.forceUpdate();
+            edit: props.edit || [],
+            index: 0,
         }
     }
 
     render(): JSX.Element {
         console.log(palette);
         return (
-            <div className={styles.editor}>
-                <MioListItem expanded={true} onChange={this.onChange} edit={true} onEdit={function(item: MioListItem){console.log(item.state.id);}} id={this.state.item} />
-            </div>
+            <Tabs className={styles.tabs} selectedIndex={this.state.index} defaultIndex={1}
+                onSelect={(index: number) => this.setState({index: index})}
+            >
+                <TabList>
+                    {this.state.edit.map((id: number, index: number) => 
+                        <Tab key={index}>{'TexPlok ' + id}</Tab>
+                    )}
+                </TabList>
+                {this.state.edit.map((id: number, index: number) => 
+                    <TabPanel className={styles.tabPanel} key={index}><MioEditorPage item={id} /></TabPanel>    
+                )}
+            </Tabs>
         );
-    }
-
-    onChange(item: MioListItem) {
-        console.log(item);
     }
 
 }
 
 interface MioEditorClasses {
-    editor: string;
+    tabs: string;
+    tabPanel: string;
 }
 
 const styles: MioEditorClasses = mergeStyleSets({
-    editor: {
-        padding: 20,
+    tabs: {
+        width: '100%',
+        height: '100%',
+    },
+    tabPanel: {
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
     },
 })

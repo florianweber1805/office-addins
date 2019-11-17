@@ -62,20 +62,25 @@ export class MioTextfield extends React.Component<MioTextfieldProps, MioTextfiel
     // ██║  ██║███████╗██║ ╚████║██████╔╝███████╗██║  ██║
     // ╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝
 
-    render(): JSX.Element {
-        console.log(palette);
+    renderTextbox(): JSX.Element {
         return (
-            !this.state.edit ?
-                <Label className={classnames([this.state.className, styles.field, this.className()])}>{this.state.text}</Label>
-            :
+            // this.state.className === 'secondaryText' ?
+            //     <iframe src={'https://view.officeapps.live.com/op/embed.aspx?src=@Url.Action("docx-file-URL")'} style={{width:'100%', height:'auto'}} />
+            // :
                 <TextField className={styles.textfield} //inputClassName={classnames([this.state.className, this.className(), styles.edit])} 
-                    value={this.state.text} multiline={true} autoAdjustHeight={true} resizable={true}
+                    value={this.state.text} multiline={true} autoAdjustHeight={true} resizable={true} //this.state.text
                     onClick={(event: React.MouseEvent<HTMLInputElement>) => this.onClick(event)}
                     onChange={(event: React.FormEvent<HTMLInputElement>, newvalue: string) => this.onChange(event, newvalue)}
                 />
-                // <iframe src={'https://view.officeapps.live.com/op/embed.aspx?src=http://remote.url.tld/path/to/document.doc'} style={{width:'100%', height:'auto'}} />
         );
-        
+    }
+
+    renderLabel(): JSX.Element {
+        return (<Label className={classnames([this.state.className, styles.field, this.className()])}>{this.state.text}</Label>);
+    }
+
+    render(): JSX.Element {
+        return (!this.state.edit ? this.renderLabel() : this.renderTextbox());
     }
 
     // ███████╗██╗   ██╗███████╗███╗   ██╗████████╗███████╗
@@ -98,6 +103,13 @@ export class MioTextfield extends React.Component<MioTextfieldProps, MioTextfiel
 
 }
 
+// ███████╗████████╗██╗   ██╗██╗     ███████╗███████╗
+// ██╔════╝╚══██╔══╝╚██╗ ██╔╝██║     ██╔════╝██╔════╝
+// ███████╗   ██║    ╚████╔╝ ██║     █████╗  ███████╗
+// ╚════██║   ██║     ╚██╔╝  ██║     ██╔══╝  ╚════██║
+// ███████║   ██║      ██║   ███████╗███████╗███████║
+// ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚══════╝╚══════╝
+
 interface MioTextfieldClasses {
     field: string;
     primaryText: string;
@@ -117,7 +129,6 @@ const styles: MioTextfieldClasses = mergeStyleSets({
     },
     primaryText: {
         fontSize: 26,
-        //background: palette.themeLighterAlt,
         borderRadius: 5,
         padding: '0 5px 5px 5px',
         margin: '0 10px 0 0',

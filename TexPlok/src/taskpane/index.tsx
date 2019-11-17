@@ -1,9 +1,9 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import "office-ui-fabric-react/dist/css/fabric.min.css";
 import { App } from "./components/App";
 import { AppContainer } from "react-hot-loader";
 import { initializeIcons } from "office-ui-fabric-react/lib/Icons";
+import "office-ui-fabric-react/dist/css/fabric.min.css";
 
 initializeIcons();
 export let isOfficeInitialized = false;
@@ -12,7 +12,9 @@ const title = "TexPlok";
 const render = Component => {
     ReactDOM.render(
         <AppContainer>
-            <Component title={title} isOfficeInitialized={isOfficeInitialized} />
+            <Component title={title} isOfficeInitialized={isOfficeInitialized}>
+                <div>rofl</div>
+            </Component>
         </AppContainer>,
         document.getElementById("container")
     );

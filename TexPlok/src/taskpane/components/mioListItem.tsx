@@ -61,12 +61,37 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
             refresh: false,
         }
         this.fetchdata = this.fetchdata.bind(this);
+        this.renderError = this.renderError.bind(this);
+        this.renderLeftStack = this.renderLeftStack.bind(this);
+        this.renderMiddleStack = this.renderMiddleStack.bind(this);
+        this.renderRightStack = this.renderRightStack.bind(this);
+        this.renderSubItems = this.renderSubItems.bind(this);
+        this.renderItem = this.renderItem.bind(this);
+        this.renderProgress = this.renderProgress.bind(this);
         this.onAction = this.onAction.bind(this);
         this.onClick = this.onClick.bind(this);
         this.onEdit = this.onEdit.bind(this);
         this.onChange = this.onChange.bind(this);
-        this.renderError = this.renderError.bind(this);
     }
+
+    componentWillReceiveProps(props: MioListItemProps) {
+        if (props.id != this.state.id) {
+            this.setState({id: props.id}, function() {
+                this.fetchdata();
+            });
+        }
+    }
+
+    componentDidMount() {
+        this.fetchdata();
+    }
+
+    // ███████╗██╗   ██╗███╗   ██╗████████╗██╗ ██████╗ ███╗   ██╗
+    // ██╔════╝██║   ██║████╗  ██║╚══██╔══╝██║██╔═══██╗████╗  ██║
+    // █████╗  ██║   ██║██╔██╗ ██║   ██║   ██║██║   ██║██╔██╗ ██║
+    // ██╔══╝  ██║   ██║██║╚██╗██║   ██║   ██║██║   ██║██║╚██╗██║
+    // ██║     ╚██████╔╝██║ ╚████║   ██║   ██║╚██████╔╝██║ ╚████║
+    // ╚═╝      ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
 
     fetchdata() {
         const that = this;
@@ -108,21 +133,6 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
         that.setState({refresh: !that.state.refresh});
     }
 
-    componentWillReceiveProps(props: MioListItemProps) {
-        if (props.id != this.state.id) {
-            this.setState(function(state, props) {
-                console.log(state);
-                return {id: props.id};
-            }, function() {
-                this.fetchdata();
-            });
-        }
-    }
-
-    componentDidMount() {
-        this.fetchdata();
-    }
-
     // ██████╗ ███████╗███╗   ██╗██████╗ ███████╗██████╗ 
     // ██╔══██╗██╔════╝████╗  ██║██╔══██╗██╔════╝██╔══██╗
     // ██████╔╝█████╗  ██╔██╗ ██║██║  ██║█████╗  ██████╔╝
@@ -131,86 +141,67 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
     // ╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝
 
     renderError(): JSX.Element {
-        return (
-            <div>
-                <Icon iconName='Error' />
-                <Label>{'Error: "' + this.state.error + '"'}</Label>
-            </div>
-        );
+        return (<div>
+            <Icon iconName='Error' />
+            <Label>{'Error: "' + this.state.error + '"'}</Label>
+        </div>);
     }
 
     renderLeftStack(): JSX.Element {
-        return (
-            <div className={styles.leftStack}>
-                {this.state.icon != undefined ? <Icon className={styles.icon} iconName={this.state.icon} /> : null}
-                {this.state.items.length > 0 ? <Icon className={styles.chevron} iconName={(this.state.expanded ? 'ChevronDown' : 'ChevronUp')}></Icon> : null}
-            </div>
-        );
+        return (<div className={styles.leftStack}>
+            {this.state.icon != undefined ? <Icon className={styles.icon} iconName={this.state.icon} /> : null}
+            {this.state.items.length > 0 ? <Icon className={styles.chevron} iconName={(this.state.expanded ? 'ChevronDown' : 'ChevronUp')}></Icon> : null}
+        </div>);
     }
 
     renderMiddleStack(): JSX.Element {
-        return (
-            <div className={styles.middleStack}>
-                {this.state.primaryText ? <MioTextfield onChange={this.onChange} className={'primaryText'} text={this.state.primaryText} edit={this.state.edit} /> : null}
-                {this.state.secondaryText ? <MioTextfield onChange={this.onChange} className={'secondaryText'} text={this.state.secondaryText} edit={this.state.edit} /> : null}
-                {this.state.tertiaryText ? <MioTextfield onChange={this.onChange} className={'tertiaryText'} text={this.state.tertiaryText} edit={this.state.edit} /> : null}
-            </div>
-        );
+        return (<div className={styles.middleStack}>
+            {this.state.primaryText ? <MioTextfield onChange={this.onChange} className={'primaryText'} text={this.state.primaryText} edit={this.state.edit} /> : null}
+            {this.state.secondaryText ? <MioTextfield onChange={this.onChange} className={'secondaryText'} text={this.state.secondaryText} edit={this.state.edit} /> : null}
+            {this.state.tertiaryText ? <MioTextfield onChange={this.onChange} className={'tertiaryText'} text={this.state.tertiaryText} edit={this.state.edit} /> : null}
+        </div>);
     }
 
     renderRightStack(): JSX.Element {
-        return (
-            <div className={styles.rightStack}>
-                {this.state.actions.length > 0 && !this.state.edit ?
-                    <div className={styles.actionStack}>
-                        {this.state.actions.map<JSX.Element>((action: MioActionType, index: number) =>
-                            <MioListItemAction key={index} onAction={this.onAction} action={action} parent={this.state.id} />
-                        )}
-                    </div>
-                : null}
-                {this.state.metaText ? <MioTextfield onChange={this.onChange} className={'metaText'} text={this.state.metaText} edit={false} /> : null}
-            </div>
-        );
+        return (<div className={styles.rightStack}>
+            {this.state.actions.length > 0 && !this.state.edit ?
+                <div className={styles.actionStack}>
+                    {this.state.actions.map<JSX.Element>((action: MioActionType, index: number) =>
+                        <MioListItemAction key={index} onAction={this.onAction} action={action} parent={this.state.id} />
+                    )}
+                </div>
+            : null}
+            {this.state.metaText ? <MioTextfield onChange={this.onChange} className={'metaText'} text={this.state.metaText} edit={false} /> : null}
+        </div>);
     }
 
     renderSubItems(): JSX.Element {
-        return (
-            this.state.expanded && this.state.items.length > 0 ?
-                <div className={styles.itemStack}>
-                    {this.state.items.map<JSX.Element>((id: number, index: number) =>
-                        <MioListItem id={id} key={index} expanded={this.state.edit} onChange={this.onChange} 
-                            edit={this.state.edit} onEdit={(item: MioListItem) => this.onEdit(item)} />
-                    )}
-                </div>
-            : null
-        );
+        return (this.state.expanded && this.state.items.length > 0 ?
+            <div className={styles.itemStack}>
+                {this.state.items.map<JSX.Element>((id: number, index: number) =>
+                    <MioListItem id={id} key={index} expanded={this.state.edit} onChange={this.onChange} 
+                        edit={this.state.edit} onEdit={(item: MioListItem) => this.onEdit(item)} />
+                )}
+            </div>
+        : null);
     }
 
     renderItem(): JSX.Element {
-        return (
-            <div className={classnames([this.state.expanded ? styles.expanded : '', styles.wrapper])}>
-                <div className={styles.item} onClick={() => this.onClick()}>
-                    {this.renderLeftStack()}
-                    {this.renderMiddleStack()}
-                    {this.renderRightStack()}
-                </div>
-                {this.renderSubItems()}
+        return (<div className={classnames([this.state.expanded ? styles.expanded : '', styles.wrapper])}>
+            <div className={styles.item} onClick={() => this.onClick()}>
+                {this.renderLeftStack()}
+                {this.renderMiddleStack()}
+                {this.renderRightStack()}
             </div>
-        );
+            {this.renderSubItems()}
+        </div>);
     }
 
-    renderProgress(): JSX.Element {
-        return (
-            <Spinner></Spinner>
-        );
-    }
+    renderProgress(): JSX.Element { return (<Spinner></Spinner>); }
 
     render(): JSX.Element {
-        console.log(palette);
-        return (
-            this.state.loading > 0 ? this.renderProgress() : 
-                this.state.error != undefined ? this.renderError() : this.renderItem()
-        );
+        return (this.state.loading > 0 ? this.renderProgress() : 
+            this.state.error != undefined ? this.renderError() : this.renderItem());
     }
 
     // ███████╗██╗   ██╗███████╗███╗   ██╗████████╗███████╗
@@ -221,24 +212,16 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
     // ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
 
     onClick(): void {
-        if (this.state.items.length > 0) {
-            this.setState({expanded: !this.state.expanded});
-        }
+        if (this.state.items.length > 0) { this.setState({expanded: !this.state.expanded}); }
     }
 
     onAction(action: MioActionType): void {
-        if (action == MioActionType.edit) {
-            this.onEdit(this);
-        }
+        if (action == MioActionType.edit) { this.onEdit(this); }
     }
 
-    onEdit(item: MioListItem) {
-        this.props.onEdit(item);
-    }
+    onEdit(item: MioListItem) { this.props.onEdit(item); }
 
-    onChange() {
-        this.props.onChange(this);
-    }
+    onChange() { this.props.onChange(this); }
 
 }
 

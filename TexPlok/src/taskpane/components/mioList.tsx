@@ -1,12 +1,9 @@
 import * as React from 'react';
-import { MioListItem } from './mioListItem';
-import { mergeStyleSets, ITheme, getTheme } from 'office-ui-fabric-react/lib/Styling';
-import { fetchdata, urlDefault, mioLogo } from './Helper';
 import Progress from './Progress'
+import { MioListItem } from './mioListItem';
+import { mergeStyleSets } from 'office-ui-fabric-react/lib/Styling';
+import { fetchdata, urlDefault, mioLogo } from './Helper';
 import { MioListControls } from './mioListControls';
-
-const theme: ITheme = getTheme();
-const { palette } = theme;
 
 export interface MioListProps {
     onEdit?: (item: MioListItem) => void;
@@ -38,8 +35,11 @@ export class MioList extends React.Component<MioListProps, MioListState> {
             edit: undefined,
             error: undefined,
         }
-        this.search = this.search.bind(this);
+        this.renderItems = this.renderItems.bind(this);
+        this.renderList = this.renderList.bind(this);
+        this.renderProgress = this.renderProgress.bind(this);
         this.onEdit = this.onEdit.bind(this);
+        this.search = this.search.bind(this);
     }
 
     componentDidMount() {
@@ -78,16 +78,9 @@ export class MioList extends React.Component<MioListProps, MioListState> {
     }
 
     // Render progress
-    renderProgress(): JSX.Element {
-        return (<Progress logo={mioLogo} title={'TexPlok'} message={'Loading...'} />);
-    }
+    renderProgress(): JSX.Element { return (<Progress logo={mioLogo} title={'TexPlok'} message={'Loading...'} />); }
 
-    render(): JSX.Element {
-        console.log(palette);
-        return (
-            this.state.loading ? this.renderProgress() : this.renderList()
-        );
-    }
+    render(): JSX.Element { return (this.state.loading ? this.renderProgress() : this.renderList()); }
 
     // ███████╗██╗   ██╗███████╗███╗   ██╗████████╗███████╗
     // ██╔════╝██║   ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝
@@ -100,12 +93,16 @@ export class MioList extends React.Component<MioListProps, MioListState> {
         if (this.props.onEdit != undefined) { this.props.onEdit(item); }
     }
 
-    search(value: string) {
-        console.log(value);
-        this.setState({search: value});
-    }
+    search(value: string) { this.setState({search: value}); }
 
 }
+
+// ███████╗████████╗██╗   ██╗██╗     ███████╗███████╗
+// ██╔════╝╚══██╔══╝╚██╗ ██╔╝██║     ██╔════╝██╔════╝
+// ███████╗   ██║    ╚████╔╝ ██║     █████╗  ███████╗
+// ╚════██║   ██║     ╚██╔╝  ██║     ██╔══╝  ╚════██║
+// ███████║   ██║      ██║   ███████╗███████╗███████║
+// ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚══════╝╚══════╝
 
 export interface MioListClasses {
     wrapper: string;

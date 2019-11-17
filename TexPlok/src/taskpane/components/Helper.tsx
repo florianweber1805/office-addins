@@ -1,3 +1,5 @@
+import "isomorphic-fetch"
+
 export const urlDefault = 'https://addin.eap4.me/load.php';
 export const urlInfo = urlDefault + '?i={0}';
 export const urlChildren = urlDefault + '?t={0}';
@@ -46,8 +48,7 @@ export function GetURLParameter(sParam)
     return '';
 }​
 
-export function openEditorWindow(object: any) {
-    console.log(typeof object);
-    // var strWindowFeatures = "location=no, height=" + screen.height + ", width=" + screen.width + ", scrollbars=no, status=no";
-    // window.open('https://addin.eap4.me/taskpane.html?edit=' + id, '_blank', strWindowFeatures);
+export function openEditorWindow(id: number) {
+    var strWindowFeatures = "location=no, height=" + screen.height + ", width=" + screen.width + ", scrollbars=no, status=no";
+    window.open('https://addin.eap4.me/taskpane.html?edit=' + id, '_blank', strWindowFeatures);
 }
