@@ -12,9 +12,7 @@ const title = "TexPlok";
 const render = Component => {
     ReactDOM.render(
         <AppContainer>
-            <Component title={title} isOfficeInitialized={isOfficeInitialized}>
-                <div>rofl</div>
-            </Component>
+            <Component title={title} isOfficeInitialized={isOfficeInitialized} />
         </AppContainer>,
         document.getElementById("container")
     );

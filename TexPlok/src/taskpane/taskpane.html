@@ -11,17 +11,16 @@
     <title>TexPlok</title>
 
     <script type="text/javascript">
-        window.onerror = function(error) {
-            //alert(error);
+        window.onerror = function(event) {
             var div = document.createElement('div');
-            div.innerHTML = error;
+            div.innerHTML = event.toString();
             document.getElementById('container').appendChild(div);
         };
     </script>
 
     <!-- Office JavaScript API -->
-    <!-- <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script> -->
-    <script type="text/javascript" src="https://addin.eap4.me/assets/office-js/office.js"></script>
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+    <!-- <script type="text/javascript" src="https://addin.eap4.me/assets/office-js/office.js"></script> -->
 
     <!-- For more information on Office UI Fabric, visit https://developer.microsoft.com/fabric. -->
     <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/9.6.1/css/fabric.min.css"/>

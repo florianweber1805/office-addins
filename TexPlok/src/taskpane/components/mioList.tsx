@@ -1,16 +1,16 @@
 import * as React from 'react';
 import Progress from './Progress'
-import { MioListItem } from './mioListItem';
+import { MioListItem, MioListItemProps } from './mioListItem';
 import { mergeStyleSets } from 'office-ui-fabric-react/lib/Styling';
 import { fetchdata, urlDefault, mioLogo } from './Helper';
 import { MioListControls } from './mioListControls';
 
 export interface MioListProps {
-    onEdit?: (item: MioListItem) => void;
+    onEdit?: (item: MioListItemProps) => void;
 }
 
 export interface MioListState {
-    items: number[];
+    items: MioListItemProps[];
     search: string;
     edit: number;
     loading: boolean;
@@ -29,7 +29,7 @@ export class MioList extends React.Component<MioListProps, MioListState> {
     constructor(props: MioListProps) {
         super(props);
         this.state = {
-            items: new Array<number>(),
+            items: new Array<MioListItemProps>(),
             loading: true,
             search: undefined,
             edit: undefined,
@@ -45,7 +45,16 @@ export class MioList extends React.Component<MioListProps, MioListState> {
     componentDidMount() {
         const that = this;
         fetchdata(urlDefault, function(data: any) { 
-            that.setState({items: data.map(obj => obj.id), loading: false});
+            that.setState({items: data.map((obj: any) => {
+                return {
+                    id: obj.id, 
+                    icon: obj.icon, 
+                    primaryText: obj.name, 
+                    secondaryText: obj.text,
+                    tertiaryText: obj.description, 
+                    metaText: obj.timestamp
+                }; 
+            }), loading: false});
         }, function() {
             that.setState({loading: false});
         }, function(error: any) {
@@ -63,8 +72,10 @@ export class MioList extends React.Component<MioListProps, MioListState> {
     // Render list items in a scrollable wrapper
     renderItems(): JSX.Element {
         return (<div className={styles.itemStack}>
-            {this.state.items.map((id: number, index: number) => 
-                <MioListItem key={index} onChange={null} edit={false} onEdit={this.onEdit} id={id} />
+            {this.state.items.map((item: MioListItemProps, index: number) => 
+                <MioListItem key={index} id={item.id} edit={false} icon={item.icon} primaryText={item.primaryText} secondaryText={item.secondaryText} 
+                    tertiaryText={item.tertiaryText} metaText={item.metaText} onChange={null} onEdit={this.onEdit} 
+                />
             )}
         </div>);
     }
@@ -90,7 +101,7 @@ export class MioList extends React.Component<MioListProps, MioListState> {
     // ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
 
     onEdit(item: MioListItem) {
-        if (this.props.onEdit != undefined) { this.props.onEdit(item); }
+        if (this.props.onEdit != undefined) { this.props.onEdit(item.props); }
     }
 
     search(value: string) { this.setState({search: value}); }
@@ -111,6 +122,8 @@ export interface MioListClasses {
 
 export const styles: MioListClasses = mergeStyleSets({
     wrapper: {
+        position: 'absolute',
+        width: '100%',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',

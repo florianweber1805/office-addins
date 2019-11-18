@@ -1,100 +1,76 @@
 import * as React from 'react';
 import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabric-react/lib/Styling';
-import { IconButton, format, Spinner } from 'office-ui-fabric-react';
-import { classnames, fetchdata, urlActionInfo } from './Helper';
+import { IconButton } from 'office-ui-fabric-react';
+import { classnames } from './Helper';
 import { MioActionType } from './mioAction';
 
 const theme: ITheme = getTheme();
-//const { palette } = theme;
-
 
 export interface MioListItemActionProps {
     action: MioActionType;
-    parent: number;
-    onAction: (action: MioActionType) => void;
-}
-
-export interface MioListItemActionState {
-    action: MioActionType;
-    parent: number;
     text: string;
     icon: string;
-    loading: boolean;
-    error: string;
+    onAction: (action: MioListItemAction) => void;
 }
 
-export class MioListItemAction extends React.Component<MioListItemActionProps, MioListItemActionState> {
+export class MioListItemAction extends React.Component<MioListItemActionProps> {
+
+    // ██████╗ ██████╗ ███╗   ███╗██████╗  ██████╗ ███╗   ██╗███████╗███╗   ██╗████████╗
+    // ██╔════╝██╔═══██╗████╗ ████║██╔══██╗██╔═══██╗████╗  ██║██╔════╝████╗  ██║╚══██╔══╝
+    // ██║     ██║   ██║██╔████╔██║██████╔╝██║   ██║██╔██╗ ██║█████╗  ██╔██╗ ██║   ██║   
+    // ██║     ██║   ██║██║╚██╔╝██║██╔═══╝ ██║   ██║██║╚██╗██║██╔══╝  ██║╚██╗██║   ██║   
+    // ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║     ╚██████╔╝██║ ╚████║███████╗██║ ╚████║   ██║   
+    //  ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝      ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚═╝  ╚═══╝   ╚═╝   
 
     constructor(props: MioListItemActionProps) {
         super(props);
-        this.state = {
-            action: props.action,
-            parent: props.parent,
-            text: '',
-            icon: '',
-            loading: false,
-            error: undefined,
-        }
         this.onClick = this.onClick.bind(this);
     }
 
-    componentDidMount() {
-        const that = this;
-        this.setState({loading: true});
-        fetchdata(format(urlActionInfo, this.state.action),
-        function(data: any) {
-            that.setState({
-                text: data[0].name,
-                icon: data[0].icon,
-                loading: false,
-            });
-        }, function() {
-            that.setState({loading: false});
-        }, function(error: any) {
-            that.setState({error: error, loading: false});
-        });
-    }
+    // ██████╗ ███████╗███╗   ██╗██████╗ ███████╗██████╗ 
+    // ██╔══██╗██╔════╝████╗  ██║██╔══██╗██╔════╝██╔══██╗
+    // ██████╔╝█████╗  ██╔██╗ ██║██║  ██║█████╗  ██████╔╝
+    // ██╔══██╗██╔══╝  ██║╚██╗██║██║  ██║██╔══╝  ██╔══██╗
+    // ██║  ██║███████╗██║ ╚████║██████╔╝███████╗██║  ██║
+    // ╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝
     
     render(): JSX.Element {
-        return (
-            this.state.loading ? <Spinner></Spinner> :
-                <div className={actionStyles.cell}>
-                    <IconButton label={this.state.text} iconProps={{iconName: this.state.icon}} className={classnames(['action', actionStyles.button])}
-                        onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => this.onClick(event)}
-                    />
-                </div>
-        );
+        return (<div key={this.props.action} className={actionStyles.wrapper}>
+            <IconButton label={this.props.text} iconProps={{iconName: this.props.icon}}
+                className={classnames(['action', actionStyles.button])}
+                onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => this.onClick(event)}
+            />
+        </div>);
     }
 
+    // ███████╗██╗   ██╗███████╗███╗   ██╗████████╗███████╗
+    // ██╔════╝██║   ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝
+    // █████╗  ██║   ██║█████╗  ██╔██╗ ██║   ██║   ███████╗
+    // ██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║╚██╗██║   ██║   ╚════██║
+    // ███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║   ███████║
+    // ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
+
     onClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
-        this.props.onAction(this.state.action);
+        this.props.onAction(this);
         event.stopPropagation();
     }
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// ███████╗████████╗██╗   ██╗██╗     ███████╗███████╗
+// ██╔════╝╚══██╔══╝╚██╗ ██╔╝██║     ██╔════╝██╔════╝
+// ███████╗   ██║    ╚████╔╝ ██║     █████╗  ███████╗
+// ╚════██║   ██║     ╚██╔╝  ██║     ██╔══╝  ╚════██║
+// ███████║   ██║      ██║   ███████╗███████╗███████║
+// ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚══════╝╚══════╝
 
 export interface MioListItemActionClasses {
-    cell: string;
+    wrapper: string;
     button: string;
 }
 
 const actionStyles: MioListItemActionClasses = mergeStyleSets({
-    cell: [
+    wrapper: [
         getFocusStyle(theme, { inset: -1 }),
         {
             width: 'auto',

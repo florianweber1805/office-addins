@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { mergeStyleSets, getFocusStyle, ITheme, getTheme } from 'office-ui-fabric-react/lib/Styling';
 import { Icon, format, Spinner, Label } from 'office-ui-fabric-react';
-import { MioListItemAction } from './mioListItemAction';
+import { MioListItemAction, MioListItemActionProps } from './mioListItemAction';
 import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
-import { fetchdata, urlInfo, urlChildren, urlAction, classnames } from './Helper';
+import { fetchdata, urlChildren, urlAction, classnames } from './Helper';
 import { MioActionType } from './mioAction';
 import { MioTextfield } from './mioTextfield';
 
@@ -12,6 +12,12 @@ const { palette } = theme;
 
 export interface MioListItemProps {
     id: number;
+    icon: string;
+    primaryText: string;
+    secondaryText: string;
+    tertiaryText: string;
+    metaText: string;
+
     onEdit: (item: MioListItem) => void;
     onChange: (item: MioListItem) => void;
     edit: boolean;
@@ -19,19 +25,20 @@ export interface MioListItemProps {
 }
 
 export interface MioListItemState {
-    id: number;
-    icon: string;
-    primaryText: string;
-    secondaryText: string;
-    tertiaryText: string;
-    metaText: string;
-    actions: MioActionType[];
-    items: number[];
+    //id: number;
+    // icon: string;
+    // primaryText: string;
+    // secondaryText: string;
+    // tertiaryText: string;
+    // metaText: string;
+    //actions: MioActionType[];
+    actions: MioListItemActionProps[];
+    items: MioListItemProps[];
     expanded: boolean;
     loading: number;
     error: string;
-    edit: boolean;
-    refresh: boolean;
+    // edit: boolean;
+    // refresh: boolean;
 }
 
 export class MioListItem extends React.Component<MioListItemProps, MioListItemState> {
@@ -46,19 +53,20 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
     constructor(props: MioListItemProps) {
         super(props);
         this.state = {
-            id: props.id,
-            icon: undefined,
-            primaryText: undefined,
-            secondaryText: undefined,
-            tertiaryText: undefined,
-            metaText: undefined,
-            actions: new Array<MioActionType>(),
-            items: new Array<number>(),
+            // id: props.id,
+            // icon: undefined,
+            // primaryText: undefined,
+            // secondaryText: undefined,
+            // tertiaryText: undefined,
+            // metaText: undefined,
+            //actions: new Array<MioActionType>(),
+            actions: new Array<MioListItemActionProps>(),
+            items: new Array<MioListItemProps>(),
             expanded: props.expanded || false,
-            loading: 3,
+            loading: 2,
             error: undefined,
-            edit: props.edit,
-            refresh: false,
+            // edit: props.edit,
+            // refresh: false,
         }
         this.fetchdata = this.fetchdata.bind(this);
         this.renderError = this.renderError.bind(this);
@@ -74,13 +82,13 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
         this.onChange = this.onChange.bind(this);
     }
 
-    componentWillReceiveProps(props: MioListItemProps) {
-        if (props.id != this.state.id) {
-            this.setState({id: props.id}, function() {
-                this.fetchdata();
-            });
-        }
-    }
+    // componentWillReceiveProps(props: MioListItemProps) {
+    //     if (props.id != this.state.id) {
+    //         this.setState({id: props.id}, function() {
+    //             this.fetchdata();
+    //         });
+    //     }
+    // }
 
     componentDidMount() {
         this.fetchdata();
@@ -97,40 +105,51 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
         const that = this;
 
         // Values
-        fetchdata(format(urlInfo, this.state.id), function(data: any) {
-            that.setState({
-                icon: data[0].icon,
-                primaryText: data[0].name,
-                secondaryText: data[0].text,
-                tertiaryText: data[0].description,
-                metaText: data[0].timestamp,
-                loading: that.state.loading - 1,
-            });
-        }, function() {
-            that.setState({loading: that.state.loading - 1});
-        }, function(error: any) {
-            that.setState({error: error, loading: that.state.loading - 1});
-        });
+        // fetchdata(format(urlInfo, this.state.id), function(data: any) {
+        //     that.setState({
+        //         icon: data[0].icon,
+        //         primaryText: data[0].name,
+        //         secondaryText: data[0].text,
+        //         tertiaryText: data[0].description,
+        //         metaText: data[0].timestamp,
+        //         loading: that.state.loading - 1,
+        //     });
+        // }, function() {
+        //     that.setState({loading: that.state.loading - 1});
+        // }, function(error: any) {
+        //     that.setState({error: error, loading: that.state.loading - 1});
+        // });
 
         // SubItems
-        fetchdata(format(urlChildren, this.state.id), function(data: any) {
-            that.setState({items: data.map(obj => obj.id), loading: that.state.loading - 1});
+        fetchdata(format(urlChildren, this.props.id), function(data: any) {
+            that.setState({items: data.map((obj: any) => { return {
+                id: obj.id, 
+                icon: obj.icon, 
+                primaryText: obj.name, 
+                secondaryText: obj.text,
+                tertiaryText: obj.description, 
+                metaText: obj.timestamp
+            }; }), loading: that.state.loading - 1});
         }, function() {
-            that.setState({loading: that.state.loading - 1, items: new Array<number>()});
+            that.setState({loading: that.state.loading - 1, items: new Array<MioListItemProps>()});
         }, function(error: any) {
-            that.setState({error: error, items: new Array<number>(), loading: that.state.loading - 1});
+            that.setState({error: error, items: new Array<MioListItemProps>(), loading: that.state.loading - 1});
         });
 
         // Actions
-        fetchdata(format(urlAction, this.state.id), function(data: any) {
-            that.setState({actions: data.map(obj => obj.action), loading: that.state.loading - 1});
+        fetchdata(format(urlAction, this.props.id), function(data: any) {
+            that.setState({actions: data.map((obj: any) => { return {
+                action: obj.action,
+                text: obj.name,
+                icon: obj.icon
+            }; }), loading: that.state.loading - 1});
         }, function() {
-            that.setState({loading: that.state.loading - 1, actions: new Array<MioActionType>()});
+            that.setState({loading: that.state.loading - 1, actions: new Array<MioListItemActionProps>()});
         }, function(error: any) {
-            that.setState({error: error, actions: new Array<MioActionType>(), loading: that.state.loading - 1});
+            that.setState({error: error, actions: new Array<MioListItemActionProps>(), loading: that.state.loading - 1});
         });
 
-        that.setState({refresh: !that.state.refresh});
+        // that.setState({refresh: !that.state.refresh});
     }
 
     // ██████╗ ███████╗███╗   ██╗██████╗ ███████╗██████╗ 
@@ -149,38 +168,42 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
 
     renderLeftStack(): JSX.Element {
         return (<div className={styles.leftStack}>
-            {this.state.icon != undefined ? <Icon className={styles.icon} iconName={this.state.icon} /> : null}
+            {this.props.icon != undefined ? <Icon className={styles.icon} iconName={this.props.icon} /> : null}
             {this.state.items.length > 0 ? <Icon className={styles.chevron} iconName={(this.state.expanded ? 'ChevronDown' : 'ChevronUp')}></Icon> : null}
         </div>);
     }
 
     renderMiddleStack(): JSX.Element {
         return (<div className={styles.middleStack}>
-            {this.state.primaryText ? <MioTextfield onChange={this.onChange} className={'primaryText'} text={this.state.primaryText} edit={this.state.edit} /> : null}
-            {this.state.secondaryText ? <MioTextfield onChange={this.onChange} className={'secondaryText'} text={this.state.secondaryText} edit={this.state.edit} /> : null}
-            {this.state.tertiaryText ? <MioTextfield onChange={this.onChange} className={'tertiaryText'} text={this.state.tertiaryText} edit={this.state.edit} /> : null}
+            {this.props.primaryText ? <MioTextfield onChange={this.onChange} className={'primaryText'} text={this.props.primaryText} edit={this.props.edit} /> : null}
+            {this.props.secondaryText ? <MioTextfield onChange={this.onChange} className={'secondaryText'} text={this.props.secondaryText} edit={this.props.edit} /> : null}
+            {this.props.tertiaryText ? <MioTextfield onChange={this.onChange} className={'tertiaryText'} text={this.props.tertiaryText} edit={this.props.edit} /> : null}
         </div>);
     }
 
     renderRightStack(): JSX.Element {
         return (<div className={styles.rightStack}>
-            {this.state.actions.length > 0 && !this.state.edit ?
+            {this.state.actions.length > 0 && !this.props.edit ?
                 <div className={styles.actionStack}>
-                    {this.state.actions.map<JSX.Element>((action: MioActionType, index: number) =>
-                        <MioListItemAction key={index} onAction={this.onAction} action={action} parent={this.state.id} />
+                    {this.state.actions.map<JSX.Element>((props: MioListItemActionProps, index: number) => 
+                        <MioListItemAction key={index} text={props.text} icon={props.icon} action={props.action} onAction={this.onAction} />
                     )}
+                    {/* {this.state.actions.map<JSX.Element>((action: MioActionType, index: number) =>
+                        <MioListItemAction key={index} onAction={this.onAction} action={action} parent={this.state.id} />
+                    )} */}
                 </div>
             : null}
-            {this.state.metaText ? <MioTextfield onChange={this.onChange} className={'metaText'} text={this.state.metaText} edit={false} /> : null}
+            {this.props.metaText ? <MioTextfield onChange={this.onChange} className={'metaText'} text={this.props.metaText} edit={false} /> : null}
         </div>);
     }
 
     renderSubItems(): JSX.Element {
         return (this.state.expanded && this.state.items.length > 0 ?
             <div className={styles.itemStack}>
-                {this.state.items.map<JSX.Element>((id: number, index: number) =>
-                    <MioListItem id={id} key={index} expanded={this.state.edit} onChange={this.onChange} 
-                        edit={this.state.edit} onEdit={(item: MioListItem) => this.onEdit(item)} />
+                {this.state.items.map<JSX.Element>((item: MioListItemProps, index: number) =>
+                    <MioListItem id={item.id} key={index} expanded={this.props.edit} onChange={this.onChange} primaryText={item.primaryText}
+                        edit={this.props.edit} onEdit={(item: MioListItem) => this.onEdit(item)} icon={item.icon} secondaryText={item.secondaryText}
+                        tertiaryText={item.tertiaryText} metaText={item.metaText} />
                 )}
             </div>
         : null);
@@ -215,8 +238,9 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
         if (this.state.items.length > 0) { this.setState({expanded: !this.state.expanded}); }
     }
 
-    onAction(action: MioActionType): void {
-        if (action == MioActionType.edit) { this.onEdit(this); }
+    onAction(action: MioListItemAction): void {
+        console.log(action);
+        if (action.props.action == MioActionType.edit) { this.onEdit(this); }
     }
 
     onEdit(item: MioListItem) { this.props.onEdit(item); }

@@ -1,16 +1,16 @@
 import * as React from 'react';
-import { MioListItem } from './mioListItem';
+import { MioListItem, MioListItemProps } from './mioListItem';
 import { mergeStyleSets, ITheme, getTheme } from 'office-ui-fabric-react/lib/Styling';
 
 const theme: ITheme = getTheme();
 const { palette } = theme;
 
 export interface MioEditorPageProps {
-    item: number;
+    item: MioListItemProps;
 }
 
 export interface MioEditorPageState {
-    item: number;
+    item: MioListItemProps;
 }
 
 export class MioEditorPage extends React.Component<MioEditorPageProps, MioEditorPageState> {
@@ -46,9 +46,12 @@ export class MioEditorPage extends React.Component<MioEditorPageProps, MioEditor
 
     render(): JSX.Element {
         console.log(palette);
+        const item = this.props.item;
         return (
             <div className={styles.editorPage}><div className={styles.item}>
-                <MioListItem expanded={true} onChange={this.onChange} edit={true} onEdit={function(item: MioListItem){console.log(item.state.id);}} id={this.state.item} />
+                <MioListItem id={item.id} icon={item.icon} primaryText={item.primaryText} secondaryText={item.secondaryText}
+                    tertiaryText={item.tertiaryText} metaText={item.metaText} expanded={true} onChange={this.onChange} 
+                    edit={true} onEdit={function(item: MioListItem){console.log(item.props.id);}} />
             </div></div>
         );
     }

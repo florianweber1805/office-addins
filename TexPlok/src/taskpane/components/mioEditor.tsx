@@ -3,16 +3,18 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import { MioEditorPage } from './mioEditorPage';
 import { mergeStyleSets, ITheme, getTheme } from '@uifabric/styling';
+import { MioListItemProps } from './mioListItem';
 
 const theme: ITheme = getTheme();
 const { palette } = theme;
+console.log(palette);
 
 export interface MioEditorProps {
-    edit?: number[];
+    edit?: MioListItemProps[];
 }
 
 export interface MioEditorState {
-    edit: number[];
+    edit: MioListItemProps[];
     index: number;
 }
 
@@ -21,24 +23,23 @@ export class MioEditor extends React.Component<MioEditorProps, MioEditorState> {
     constructor(props: MioEditorProps) {
         super(props);
         this.state = {
-            edit: props.edit || [],
+            edit: props.edit || new Array<MioListItemProps>(),
             index: 0,
         }
     }
 
     render(): JSX.Element {
-        console.log(palette);
         return (
-            <Tabs className={styles.tabs} selectedIndex={this.state.index} defaultIndex={1}
+            <Tabs className={styles.tabs} selectedIndex={this.state.index}
                 onSelect={(index: number) => this.setState({index: index})}
             >
                 <TabList>
-                    {this.state.edit.map((id: number, index: number) => 
-                        <Tab key={index}>{'TexPlok ' + id}</Tab>
+                    {this.state.edit.map((item: MioListItemProps, index: number) => 
+                        <Tab key={index}>{'TexPlok ' + item.id}</Tab>
                     )}
                 </TabList>
-                {this.state.edit.map((id: number, index: number) => 
-                    <TabPanel className={styles.tabPanel} key={index}><MioEditorPage item={id} /></TabPanel>    
+                {this.state.edit.map((item: MioListItemProps, index: number) => 
+                    <TabPanel className={styles.tabPanel} key={index}><MioEditorPage item={item} /></TabPanel>    
                 )}
             </Tabs>
         );

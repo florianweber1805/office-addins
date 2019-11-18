@@ -2,8 +2,8 @@ import * as React from "react";
 import SplitPane from "react-split-pane";
 import { MioList } from "./mioList";
 import { isOfficeInitialized } from "..";
-import { MioListItem } from "./mioListItem";
-import { GetURLParameter, openEditorWindow } from './Helper';
+import { MioListItemProps } from "./mioListItem";
+import { openEditorWindow } from './Helper';
 import { mergeStyleSets } from "@uifabric/styling";
 //import { MioEditorPage } from "./mioEditorPage";
 import "./SplitPane.css";
@@ -11,7 +11,7 @@ import { MioEditor } from "./mioEditor";
 
 export interface AppProps {}
 export interface AppState {
-	edit: number[];
+	edit: MioListItemProps[];
 }
 
 export class App extends React.Component<AppProps, AppState> {
@@ -26,7 +26,7 @@ export class App extends React.Component<AppProps, AppState> {
 	constructor(props: AppProps) {
 		super(props);
 		this.state = {
-			edit: new Array<number>(Number(GetURLParameter('edit'))) || [],
+			edit: new Array<MioListItemProps>(), //Number(GetURLParameter('edit'))
 		}
 		this.renderEditor = this.renderEditor.bind(this);
 		this.renderList = this.renderList.bind(this);
@@ -62,18 +62,18 @@ export class App extends React.Component<AppProps, AppState> {
     // ███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║   ███████║
     // ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
 
-	onEdit(item: MioListItem) {
+	onEdit(item: MioListItemProps) {
 		if (!isOfficeInitialized) {
 			this.setState(function() {
-				if (!this.state.edit.includes(item.state.id)) {
+				if (!this.state.edit.includes(item)) {
 					var edit = this.state.edit;
-					edit.push(item.state.id);
+					edit.push(item);
 					return {edit: edit};
 				}
 				return {edit: this.state.edit};
 			});
 		} else {
-			openEditorWindow(item.state.id);
+			openEditorWindow(item.id);
 		}
 	}
 
