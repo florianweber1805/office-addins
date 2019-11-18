@@ -32,19 +32,41 @@
         WHERE tbc.parent = " . (string)$textblock;
 
     function Actions($id) {
-        $sql_a = "SELECT tba.action AS 'action', a.name AS 'name', a.icon AS 'icon'
+        global $connect;
+        $sql = "SELECT tba.action AS 'action', a.name AS 'name', a.icon AS 'icon'
             FROM textblock_action AS tba
             INNER JOIN action AS a ON tba.action = a.id
             WHERE tba.parent = " . (string)$id . "
             ORDER BY a.orderindex ASC";
-        $result_a = mysqli_query($connect, $sql_a);
-        if (mysqli_num_rows($result_a) > 0) {
-            $rows_a = array();
-            while($r_a = mysqli_fetch_assoc($result_a)) {
-                $rows_a[] = $r_a;
+        $result = mysqli_query($connect, $sql);
+        if (mysqli_num_rows($result) > 0) {
+            $rows = array();
+            while($r = mysqli_fetch_assoc($result)) {
+                $rows[] = $r;
             }
-            return json_encode($rows_a);
+            return $rows;
         }
+        return [];
+    }
+
+    function SubItems($id) {
+        global $connect;
+        $sql = "SELECT tbs.id AS 'id', i.icon AS 'icon', tbs.name AS 'name', tbs.text AS 'text', tbs.description AS 'description', tbs.author AS 'author', CONVERT(tbs.timestamp, DATE) AS 'timestamp', tbs.type AS 'type' FROM textblock_child AS tbc
+            INNER JOIN textblock AS tbs ON tbs.id = tbc.child
+            INNER JOIN textblock_icon AS tbi ON tbi.parent = tbs.id
+            INNER JOIN icon AS i ON tbi.icon = i.id
+            WHERE tbc.parent = " . (string)$id;
+        $result = mysqli_query($connect, $sql);
+        if (mysqli_num_rows($result) > 0) {
+            $rows = array();
+            while($r = mysqli_fetch_assoc($result)) {
+                $r['actions'] = Actions($r['id']);
+                $r['items'] = SubItems($r['id']);
+                $rows[] = $r;
+            }
+            return $rows;
+        }
+        return [];
     }
 
     // Attributes
@@ -74,6 +96,7 @@
         $rows = array();
         while($r = mysqli_fetch_assoc($result)) {
             $r['actions'] = Actions($r['id']);
+            $r['items'] = SubItems($r['id']);
             $rows[] = $r;
         }
         print json_encode($rows);
