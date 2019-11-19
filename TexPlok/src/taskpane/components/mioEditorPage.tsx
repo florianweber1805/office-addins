@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { MioListItem, MioListItemProps } from './mioListItem';
+import { MioListItem, MioListItemProps, MioListItemChange } from './mioListItem';
 import { mergeStyleSets, ITheme, getTheme } from 'office-ui-fabric-react/lib/Styling';
 
 const theme: ITheme = getTheme();
@@ -7,6 +7,7 @@ const { palette } = theme;
 
 export interface MioEditorPageProps {
     item: MioListItemProps;
+    onChange: (item: MioListItemChange) => void;
 }
 
 export interface MioEditorPageState {
@@ -46,12 +47,12 @@ export class MioEditorPage extends React.Component<MioEditorPageProps, MioEditor
 
     render(): JSX.Element {
         console.log(palette);
-        const item = this.props.item;
+        const item = this.state.item;
         return (
             <div className={styles.editorPage}><div className={styles.item}>
                 <MioListItem id={item.id} icon={item.icon} primaryText={item.primaryText} secondaryText={item.secondaryText}
                     tertiaryText={item.tertiaryText} metaText={item.metaText} expanded={true} onChange={this.onChange} 
-                    edit={true} onEdit={function(item: MioListItem){console.log(item.props.id);}} />
+                    edit={true} onEdit={function(item: MioListItem){console.log(item.props.id);}} items={item.items} actions={item.actions} />
             </div></div>
         );
     }
@@ -63,8 +64,29 @@ export class MioEditorPage extends React.Component<MioEditorPageProps, MioEditor
     // ███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║   ███████║
     // ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
 
-    onChange(item: MioListItem) {
-        console.log(item);
+    onChange(item: MioListItemChange) {
+        //this.setState({item: item});
+        this.props.onChange(item);
+
+        // this.props.onChange({
+        //     id: item.props.id,
+        //     icon: item.state.icon,
+        //     primaryText: item.state.primaryText,
+        //     secondaryText: item.state.secondaryText,
+        //     tertiaryText: item.state.tertiaryText,
+        //     metaText: item.props.metaText,
+        //     items: item.state.items,
+        //     actions: item.state.actions,
+        //     onEdit: function(){},
+		// 	onChange: function(){},
+		// 	edit: true,
+        // });
+        // this.setState((state) => {
+        //     return {
+        //         item: state.item,
+        //     };
+        // });
+        console.log('Changed: ' + item.id);
     }
 
 }
@@ -84,8 +106,7 @@ interface MioEditorPageClasses {
 const styles: MioEditorPageClasses = mergeStyleSets({
     editorPage: {
         width: '100%',
-        height: 'calc(100% - 42px)',
-        boxSizing: 'border-box',
+        height: '100%',
         overflow: 'hidden',
         overflowY: 'scroll',
     },

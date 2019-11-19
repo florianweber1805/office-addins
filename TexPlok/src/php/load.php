@@ -30,6 +30,10 @@
         INNER JOIN textblock_icon AS tbi ON tbi.parent = tbs.id
         INNER JOIN icon AS i ON tbi.icon = i.id
         WHERE tbc.parent = " . (string)$textblock;
+    $getInfo = "SELECT tbs.id AS 'id', i.icon AS 'icon', tbs.name AS 'name', tbs.text AS 'text', tbs.description AS 'description', tbs.author AS 'author', CONVERT(tbs.timestamp, DATE) AS 'timestamp', tbs.type AS 'type' FROM textblock AS tbs
+        INNER JOIN textblock_icon AS tbi ON tbi.parent = tbs.id
+        INNER JOIN icon AS i ON tbi.icon = i.id
+        WHERE tbs.id = " . (string)$info;
 
     function Actions($id) {
         global $connect;
@@ -77,7 +81,8 @@
     //         WHERE a.id = " . (string)$actioninfo;
     if (!is_null($action)) {
         $sql = $getActions;
-    // } elseif (!is_null($info)) {
+    } elseif (!is_null($info)) {
+        $sql = $getInfo;
     //     $sql = "SELECT i.icon AS 'icon', tbs.name AS 'name', tbs.text AS 'text', tbs.description AS 'description', 
     //             tbs.author AS 'author', CONVERT(tbs.timestamp, DATE) AS 'timestamp', tbs.type AS 'type' FROM textblock AS tbs
     //         INNER JOIN textblock_icon AS tbi ON tbi.parent = tbs.id

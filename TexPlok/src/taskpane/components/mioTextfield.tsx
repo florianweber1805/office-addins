@@ -10,7 +10,7 @@ export interface MioTextfieldProps {
     text: string;
     edit: boolean;
     className: string;
-    onChange: () => void;
+    onChange: (newvalue: string) => void;
 }
 
 export interface MioTextfieldState {
@@ -95,9 +95,8 @@ export class MioTextfield extends React.Component<MioTextfieldProps, MioTextfiel
     }
 
     onChange(event: React.FormEvent<HTMLInputElement>, newvalue: string) {
-        this.props.onChange();
+        this.props.onChange(newvalue);
         this.setState({text: newvalue});
-        console.log(newvalue);
         event.preventDefault();
     }
 
