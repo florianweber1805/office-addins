@@ -1,13 +1,16 @@
 import * as React from 'react';
-import { MioListItem, MioListItemProps, MioListItemChange } from './mioListItem';
+import { MioListItem, MioListItemProps } from './mioListItem';
 import { mergeStyleSets, ITheme, getTheme } from 'office-ui-fabric-react/lib/Styling';
+import { updatePage } from './mioEditor';
 
 const theme: ITheme = getTheme();
 const { palette } = theme;
+console.log(palette);
 
 export interface MioEditorPageProps {
+    id: number;
     item: MioListItemProps;
-    onChange: (item: MioListItemChange) => void;
+    //onChange: (item: MioListItemChange) => void;
 }
 
 export interface MioEditorPageState {
@@ -31,12 +34,12 @@ export class MioEditorPage extends React.Component<MioEditorPageProps, MioEditor
         this.onChange = this.onChange.bind(this);
     }
 
-    componentWillReceiveProps(props: MioEditorPageProps) {
-        if (props.item != this.state.item) {
-            this.setState({item: props.item});
-            this.forceUpdate();
-        }
-    }
+    // componentWillReceiveProps(props: MioEditorPageProps) {
+    //     if (props.item != this.props.item) {
+    //         this.setState({item: props.item});
+    //         this.forceUpdate();
+    //     }
+    // }
 
     // ██████╗ ███████╗███╗   ██╗██████╗ ███████╗██████╗ 
     // ██╔══██╗██╔════╝████╗  ██║██╔══██╗██╔════╝██╔══██╗
@@ -46,13 +49,12 @@ export class MioEditorPage extends React.Component<MioEditorPageProps, MioEditor
     // ╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝
 
     render(): JSX.Element {
-        console.log(palette);
         const item = this.state.item;
         return (
             <div className={styles.editorPage}><div className={styles.item}>
                 <MioListItem id={item.id} icon={item.icon} primaryText={item.primaryText} secondaryText={item.secondaryText}
-                    tertiaryText={item.tertiaryText} metaText={item.metaText} expanded={true} onChange={this.onChange} 
-                    edit={true} onEdit={function(item: MioListItem){console.log(item.props.id);}} items={item.items} actions={item.actions} />
+                    tertiaryText={item.tertiaryText} metaText={item.metaText} expanded={true} //onChange={this.props.} //onEdit={function(item: MioListItem){console.log(item.props.id);}}
+                    edit={true} items={item.items} actions={item.actions} onChange={this.onChange} /> 
             </div></div>
         );
     }
@@ -64,30 +66,36 @@ export class MioEditorPage extends React.Component<MioEditorPageProps, MioEditor
     // ███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║   ███████║
     // ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
 
-    onChange(item: MioListItemChange) {
-        //this.setState({item: item});
-        this.props.onChange(item);
-
-        // this.props.onChange({
-        //     id: item.props.id,
-        //     icon: item.state.icon,
-        //     primaryText: item.state.primaryText,
-        //     secondaryText: item.state.secondaryText,
-        //     tertiaryText: item.state.tertiaryText,
-        //     metaText: item.props.metaText,
-        //     items: item.state.items,
-        //     actions: item.state.actions,
-        //     onEdit: function(){},
-		// 	onChange: function(){},
-		// 	edit: true,
-        // });
-        // this.setState((state) => {
-        //     return {
-        //         item: state.item,
-        //     };
-        // });
-        console.log('Changed: ' + item.id);
+    onChange() {
+        updatePage(this.props.id, this.state.item);
     }
+
+    // onChange(item: MioListItemChange) {
+    //     updateEditorItem(this.props.id, item);
+    // }
+    //     //this.setState({item: item});
+    //     this.props.onChange(item);
+
+    //     // this.props.onChange({
+    //     //     id: item.props.id,
+    //     //     icon: item.state.icon,
+    //     //     primaryText: item.state.primaryText,
+    //     //     secondaryText: item.state.secondaryText,
+    //     //     tertiaryText: item.state.tertiaryText,
+    //     //     metaText: item.props.metaText,
+    //     //     items: item.state.items,
+    //     //     actions: item.state.actions,
+    //     //     onEdit: function(){},
+	// 	// 	onChange: function(){},
+	// 	// 	edit: true,
+    //     // });
+    //     // this.setState((state) => {
+    //     //     return {
+    //     //         item: state.item,
+    //     //     };
+    //     // });
+    //     console.log('Changed: ' + item.id);
+    // }
 
 }
 

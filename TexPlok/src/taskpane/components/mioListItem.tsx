@@ -6,6 +6,7 @@ import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
 import { classnames } from './Helper';
 import { MioActionType } from './mioAction';
 import { MioTextfield } from './mioTextfield';
+import { openPage } from './mioEditor';
 
 const theme: ITheme = getTheme();
 const { palette } = theme;
@@ -20,8 +21,11 @@ export interface MioListItemProps {
     actions: MioListItemActionProps[];
     items: MioListItemProps[];
 
-    onEdit: (item: MioListItem) => void;
-    onChange: (item: MioListItemChange) => void;
+    onChange: () => void;
+
+    //onEdit: (item: MioListItem) => void;
+    // onChange?: (item: MioListItemChange) => void;
+    // onSubItemChange?: () => void;
     edit: boolean;
     expanded?: boolean;
 }
@@ -90,8 +94,10 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
         this.renderProgress = this.renderProgress.bind(this);
         this.onAction = this.onAction.bind(this);
         this.onClick = this.onClick.bind(this);
-        this.onEdit = this.onEdit.bind(this);
-        this.onChange = this.onChange.bind(this);
+        //this.onEdit = this.onEdit.bind(this);
+        this.onTextfieldChange = this.onTextfieldChange.bind(this);
+        //this.onSubChange = this.onSubChange.bind(this);
+        this.onSubItemChange = this.onSubItemChange.bind(this);
     }
 
     // componentWillReceiveProps(props: MioListItemProps) {
@@ -187,11 +193,11 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
 
     renderMiddleStack(): JSX.Element {
         return (<div className={styles.middleStack}>
-            {this.state.primaryText ? <MioTextfield onChange={this.onChange} 
+            {this.state.primaryText ? <MioTextfield onChange={(newValue) => this.onTextfieldChange('primaryText', newValue)}
                 className={'primaryText'} text={this.state.primaryText} edit={this.props.edit} /> : null}
-            {this.state.secondaryText ? <MioTextfield onChange={this.onChange}
+            {this.state.secondaryText ? <MioTextfield onChange={(newValue) => this.onTextfieldChange('secondaryText', newValue)}
                 className={'secondaryText'} text={this.state.secondaryText} edit={this.props.edit} /> : null}
-            {this.state.tertiaryText ? <MioTextfield onChange={this.onChange}
+            {this.state.tertiaryText ? <MioTextfield onChange={(newValue) => this.onTextfieldChange('tertiaryText', newValue)}
                 className={'tertiaryText'} text={this.state.tertiaryText} edit={this.props.edit} /> : null}
         </div>);
     }
@@ -217,8 +223,10 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
         return (this.state.expanded && this.props.items.length > 0 ?
             <div className={styles.itemStack}>
                 {this.state.items != undefined && this.state.items.map<JSX.Element>((item: MioListItemProps, index: number) =>
-                    <MioListItem id={item.id} key={index} expanded={this.props.edit} onChange={this.onChange} primaryText={item.primaryText}
-                        edit={this.props.edit} onEdit={(item: MioListItem) => this.onEdit(item)} icon={item.icon} secondaryText={item.secondaryText}
+                    <MioListItem id={item.id} key={index} expanded={this.props.edit} primaryText={item.primaryText} 
+                        //onChange={this.props.onChange != undefined ? this.props.onChange(item) : function() {}}
+                        onChange={this.onSubItemChange}
+                        edit={this.props.edit}  icon={item.icon} secondaryText={item.secondaryText} //onEdit={(item: MioListItem) => this.onEdit(item)}
                         tertiaryText={item.tertiaryText} metaText={item.metaText} items={item.items} actions={item.actions} />
                 )}
             </div>
@@ -255,30 +263,78 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
     }
 
     onAction(action: MioListItemAction): void {
-        console.log(action);
-        if (action.props.action == MioActionType.edit) { this.onEdit(this); }
+        if (action.props.action == MioActionType.edit) {
+            openPage(this.props);
+        }
     }
 
-    onEdit(item: MioListItem) { this.props.onEdit(item); }
+    // onEdit(item: MioListItem) {
+    //     //this.props.onEdit(item);
+    //     //openItem(item.props);
+        
+    // }
 
-    onChange() { 
-        // this.setState({
-        //     value: newvalue,
-        // });
-        this.props.onChange({
-            id: this.props.id,
-            icon: this.state.icon,
-            primaryText: this.state.primaryText,
-            secondaryText: this.state.secondaryText,
-            tertiaryText: this.state.tertiaryText,
-            items: this.state.items,
-            actions: this.state.actions,
-        });
-        // this.setState({
-
-        // });
-        // this.props.onChange(this); 
+    onSubItemChange() {
+        this.props.onChange();
     }
+    //     if (this.props.onSubItemChange != undefined) {
+    //         this.props.onSubItemChange();
+    //     } else {
+    //         this.props.onChange()
+    //     }
+    // }
+
+    onTextfieldChange(name: string, newValue: string) {
+        switch (name) {
+            case 'primaryText':
+                this.setState({primaryText: newValue}); break;
+            case 'secondaryText':
+                this.setState({secondaryText: newValue}); break;
+            case 'tertiaryText':
+                this.setState({tertiaryText: newValue}); break;
+        }
+        this.props.onChange();
+    }
+
+    //     //var state = {[name]: newValue};
+    //     //this.setState(state); //, 
+    //     // function() {
+    //     //     updateEditorItem({
+    //     //         id: getEditorIndex(),
+    //     //         icon: this.state.icon,
+    //     //         primaryText: this.state.primaryText,
+    //     //         secondaryText: this.state.secondaryText,
+    //     //         tertiaryText: this.state.tertiaryText,
+    //     //         items: this.state.items,
+    //     //         actions: this.state.actions,
+    //     //     })
+    //     // });
+
+        
+        
+    //     // updateItem({
+    //     //     id: this.props.id,
+    //     //     icon: this.state.icon,
+    //     //     primaryText: this.state.primaryText,
+    //     //     secondaryText: this.state.secondaryText,
+    //     //     tertiaryText: this.state.tertiaryText,
+    //     //     items: this.state.items,
+    //     //     actions: this.state.actions,
+    //     // });
+    //     // this.props.onChange({
+    //     //     id: this.props.id,
+    //     //     icon: this.state.icon,
+    //     //     primaryText: this.state.primaryText,
+    //     //     secondaryText: this.state.secondaryText,
+    //     //     tertiaryText: this.state.tertiaryText,
+    //     //     items: this.state.items,
+    //     //     actions: this.state.actions,
+    //     // });
+    //     // this.setState({
+
+    //     // });
+    //     // this.props.onChange(this); 
+    // }
 
 }
 

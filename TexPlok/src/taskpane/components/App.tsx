@@ -4,14 +4,16 @@ import { isOfficeInitialized } from "..";
 import { MioListItemProps } from "./mioListItem";
 import { openEditorWindow, fetchdata, urlInfo, GetURLParameter } from './Helper';
 import { mergeStyleSets } from "@uifabric/styling";
-import { MioEditor } from "./mioEditor";
+import { MioEditor, getPages } from "./mioEditor";
 import { format } from "@uifabric/utilities";
 import SplitPane from "react-split-pane";
 import "./SplitPane.css";
 
-export interface AppProps {}
+export interface AppProps {
+	//openEditorItems: MioListItemProps[];
+}
 export interface AppState {
-	edit: MioListItemProps;
+	//edit: MioListItemProps;
 }
 
 export class App extends React.Component<AppProps, AppState> {
@@ -87,11 +89,11 @@ export class App extends React.Component<AppProps, AppState> {
     // ╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝
 
 	renderEditor(): JSX.Element {
-		return (<div className={styles.editor}><MioEditor edit={this.state.edit} /></div>);
+		return (<div className={styles.editor}><MioEditor pages={getPages()} /></div>);
 	}
 
 	renderList(): JSX.Element {
-		return (<div className={styles.list}><MioList onEdit={this.onEdit} /></div>);
+		return (<div className={styles.list}><MioList /></div>); //
 	}
 
 	renderStandalone(): JSX.Element {

@@ -10,7 +10,7 @@ export interface MioTextfieldProps {
     text: string;
     edit: boolean;
     className: string;
-    onChange: (newvalue: string) => void;
+    onChange: (newValue: string) => void;
 }
 
 export interface MioTextfieldState {
@@ -70,7 +70,7 @@ export class MioTextfield extends React.Component<MioTextfieldProps, MioTextfiel
                 <TextField className={styles.textfield} //inputClassName={classnames([this.state.className, this.className(), styles.edit])} 
                     value={this.state.text} multiline={true} autoAdjustHeight={true} resizable={true} //this.state.text
                     onClick={(event: React.MouseEvent<HTMLInputElement>) => this.onClick(event)}
-                    onChange={(event: React.FormEvent<HTMLInputElement>, newvalue: string) => this.onChange(event, newvalue)}
+                    onChange={(event: React.FormEvent<HTMLInputElement>, newValue: string) => this.onChange(event, newValue)}
                 />
         );
     }
@@ -94,10 +94,11 @@ export class MioTextfield extends React.Component<MioTextfieldProps, MioTextfiel
         event.stopPropagation();
     }
 
-    onChange(event: React.FormEvent<HTMLInputElement>, newvalue: string) {
-        this.props.onChange(newvalue);
-        this.setState({text: newvalue});
-        event.preventDefault();
+    onChange(event: React.FormEvent<HTMLInputElement>, newValue: string) {
+        this.props.onChange(newValue);
+        this.setState({text: newValue});
+        console.log(event);
+        //event.preventDefault();
     }
 
 }

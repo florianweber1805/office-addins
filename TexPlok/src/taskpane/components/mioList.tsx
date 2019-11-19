@@ -7,7 +7,7 @@ import { MioListControls } from './mioListControls';
 import { MioListItemActionProps } from './mioListItemAction';
 
 export interface MioListProps {
-    onEdit?: (item: MioListItemProps) => void;
+    //onEdit?: (item: MioListItemProps) => void;
 }
 
 export interface MioListState {
@@ -61,7 +61,7 @@ export class MioList extends React.Component<MioListProps, MioListState> {
         this.renderItems = this.renderItems.bind(this);
         this.renderList = this.renderList.bind(this);
         this.renderProgress = this.renderProgress.bind(this);
-        this.onEdit = this.onEdit.bind(this);
+        // this.onEdit = this.onEdit.bind(this);
         this.search = this.search.bind(this);
     }
 
@@ -91,7 +91,8 @@ export class MioList extends React.Component<MioListProps, MioListState> {
         return (<div className={styles.itemStack}>
             {this.state.items.map((item: MioListItemProps, index: number) => 
                 <MioListItem key={index} id={item.id} edit={false} icon={item.icon} primaryText={item.primaryText} secondaryText={item.secondaryText} 
-                    tertiaryText={item.tertiaryText} metaText={item.metaText} onChange={null} onEdit={this.onEdit} items={item.items} actions={item.actions}
+                    tertiaryText={item.tertiaryText} metaText={item.metaText} items={item.items} actions={item.actions} //onChange={null} onEdit={this.onEdit}
+                    onChange={null}
                 />
             )}
         </div>);
@@ -121,9 +122,9 @@ export class MioList extends React.Component<MioListProps, MioListState> {
     // ███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║   ███████║
     // ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
 
-    onEdit(item: MioListItem) {
-        if (this.props.onEdit != undefined) { this.props.onEdit(item.props); }
-    }
+    // onEdit(item: MioListItem) {
+    //     if (this.props.onEdit != undefined) { this.props.onEdit(item.props); }
+    // }
 
     search(value: string) { this.setState({search: value}); }
 

@@ -9,6 +9,8 @@ initializeIcons();
 export let isOfficeInitialized = false;
 const title = "TexPlok";
 
+export function refresh() { render(App); }
+
 const render = Component => {
     ReactDOM.render(
         <AppContainer>
