@@ -5,12 +5,11 @@ import { updatePage } from './mioEditor';
 
 const theme: ITheme = getTheme();
 const { palette } = theme;
-console.log(palette);
+if (palette != undefined) {}
 
 export interface MioEditorPageProps {
     id: number;
     item: MioListItemProps;
-    //onChange: (item: MioListItemChange) => void;
 }
 
 export interface MioEditorPageState {
@@ -34,13 +33,6 @@ export class MioEditorPage extends React.Component<MioEditorPageProps, MioEditor
         this.onChange = this.onChange.bind(this);
     }
 
-    // componentWillReceiveProps(props: MioEditorPageProps) {
-    //     if (props.item != this.props.item) {
-    //         this.setState({item: props.item});
-    //         this.forceUpdate();
-    //     }
-    // }
-
     // ██████╗ ███████╗███╗   ██╗██████╗ ███████╗██████╗ 
     // ██╔══██╗██╔════╝████╗  ██║██╔══██╗██╔════╝██╔══██╗
     // ██████╔╝█████╗  ██╔██╗ ██║██║  ██║█████╗  ██████╔╝
@@ -52,9 +44,9 @@ export class MioEditorPage extends React.Component<MioEditorPageProps, MioEditor
         const item = this.state.item;
         return (
             <div className={styles.editorPage}><div className={styles.item}>
-                <MioListItem id={item.id} icon={item.icon} primaryText={item.primaryText} secondaryText={item.secondaryText}
-                    tertiaryText={item.tertiaryText} metaText={item.metaText} expanded={true} //onChange={this.props.} //onEdit={function(item: MioListItem){console.log(item.props.id);}}
-                    edit={true} items={item.items} actions={item.actions} onChange={this.onChange} /> 
+                <MioListItem id={item.id} icon={item.icon} primaryText={item.primaryText} secondaryText={item.secondaryText} tertiaryText={item.tertiaryText}
+                    metaText={item.metaText} expanded={item.expanded || true} edit={true} items={item.items} actions={item.actions} onChange={this.onChange}
+                    changed={item.changed} /> 
             </div></div>
         );
     }
@@ -66,36 +58,10 @@ export class MioEditorPage extends React.Component<MioEditorPageProps, MioEditor
     // ███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║   ███████║
     // ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
 
-    onChange() {
-        updatePage(this.props.id, this.state.item);
+    onChange(item: MioListItemProps) {
+        console.log('rofl');
+        updatePage(this.props.id, item);
     }
-
-    // onChange(item: MioListItemChange) {
-    //     updateEditorItem(this.props.id, item);
-    // }
-    //     //this.setState({item: item});
-    //     this.props.onChange(item);
-
-    //     // this.props.onChange({
-    //     //     id: item.props.id,
-    //     //     icon: item.state.icon,
-    //     //     primaryText: item.state.primaryText,
-    //     //     secondaryText: item.state.secondaryText,
-    //     //     tertiaryText: item.state.tertiaryText,
-    //     //     metaText: item.props.metaText,
-    //     //     items: item.state.items,
-    //     //     actions: item.state.actions,
-    //     //     onEdit: function(){},
-	// 	// 	onChange: function(){},
-	// 	// 	edit: true,
-    //     // });
-    //     // this.setState((state) => {
-    //     //     return {
-    //     //         item: state.item,
-    //     //     };
-    //     // });
-    //     console.log('Changed: ' + item.id);
-    // }
 
 }
 

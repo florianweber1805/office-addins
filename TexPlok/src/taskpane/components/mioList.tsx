@@ -2,14 +2,10 @@ import * as React from 'react';
 import Progress from './Progress'
 import { MioListItem, MioListItemProps } from './mioListItem';
 import { mergeStyleSets } from 'office-ui-fabric-react/lib/Styling';
-import { fetchdata, urlDefault, mioLogo } from './Helper';
+import { fetchdata, urlDefault, mioLogo, mapItems } from './Helper';
 import { MioListControls } from './mioListControls';
-import { MioListItemActionProps } from './mioListItemAction';
 
-export interface MioListProps {
-    //onEdit?: (item: MioListItemProps) => void;
-}
-
+export interface MioListProps {}
 export interface MioListState {
     items: MioListItemProps[];
     search: string;
@@ -17,26 +13,6 @@ export interface MioListState {
     loading: boolean;
     delay: boolean;
     error: string;
-}
-
-export function mapActions(data: any): MioListItemActionProps[] {
-    return data.map((obj: any) => { return {
-        action: obj.action,
-        text: obj.name,
-        icon: obj.icon,
-    }; })
-}
-export function mapItems(data: any): MioListItemProps[] {
-    return data.map((obj: any) => { return {
-        id: obj.id, 
-        icon: obj.icon, 
-        primaryText: obj.name, 
-        secondaryText: obj.text,
-        tertiaryText: obj.description, 
-        metaText: obj.timestamp,
-        items: mapItems(obj.items),
-        actions: mapActions(obj.actions),
-    }; })
 }
 
 export class MioList extends React.Component<MioListProps, MioListState> {
@@ -76,7 +52,7 @@ export class MioList extends React.Component<MioListProps, MioListState> {
         });
         setTimeout(function () {
             that.setState({delay: false});
-        }, 1000);
+        }, 500);
     }
 
     // ██████╗ ███████╗███╗   ██╗██████╗ ███████╗██████╗ 

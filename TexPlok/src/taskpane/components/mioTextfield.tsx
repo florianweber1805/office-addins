@@ -45,15 +45,16 @@ export class MioTextfield extends React.Component<MioTextfieldProps, MioTextfiel
         }
     }
 
-    className(): string {
-        switch (this.state.className) {
-            case 'primaryText': return styles.primaryText;
-            case 'secondaryText': return styles.secondaryText;
-            case 'tertiaryText': return styles.tertiaryText;
-            case 'metaText': return styles.metaText;
-            default: return styles.tertiaryText;
-        }
-    }
+    // className(): string {
+    //     // switch (this.state.className) {
+    //     //     case 'primaryText': return styles.primaryText;
+    //     //     case 'secondaryText': return styles.secondaryText;
+    //     //     case 'tertiaryText': return styles.tertiaryText;
+    //     //     case 'metaText': return styles.metaText;
+    //     //     default: return styles.tertiaryText;
+    //     // }
+    //     return styles[this.state.className];
+    // }
 
     // ██████╗ ███████╗███╗   ██╗██████╗ ███████╗██████╗ 
     // ██╔══██╗██╔════╝████╗  ██║██╔══██╗██╔════╝██╔══██╗
@@ -76,7 +77,7 @@ export class MioTextfield extends React.Component<MioTextfieldProps, MioTextfiel
     }
 
     renderLabel(): JSX.Element {
-        return (<Label className={classnames([this.state.className, styles.field, this.className()])}>{this.state.text}</Label>);
+        return (<Label className={classnames([this.state.className, styles.field, styles[this.state.className]])}>{this.state.text}</Label>);
     }
 
     render(): JSX.Element {
@@ -95,8 +96,8 @@ export class MioTextfield extends React.Component<MioTextfieldProps, MioTextfiel
     }
 
     onChange(event: React.FormEvent<HTMLInputElement>, newValue: string) {
-        this.props.onChange(newValue);
-        this.setState({text: newValue});
+        this.setState({text: newValue}, 
+        function() { this.props.onChange(newValue) });
         console.log(event);
         //event.preventDefault();
     }
@@ -150,7 +151,7 @@ const styles: MioTextfieldClasses = mergeStyleSets({
         background: palette.themeLighter,
         borderRadius: 0,
         margin: 0,
-        padding: 10,
+        padding: 5,
     },
     textfield: {
         padding: 5,

@@ -14,7 +14,15 @@
     $type = $_GET["type"];
     $author = $_GET["author"];
 
+    $update = $_GET["u"];
+
     $sql = "INSERT INTO textblocks (Type, Text, Description, Author) VALUES (" . $type . ", " . $text . ", " . $description . ", " . $author . ")";
+    if (!is_null($update)) {
+        $data = json_decode($update);
+        $sql = "UPDATE textblock AS tb
+            SET tb.name = '".$data["primaryText"]."', tb.text = '".$data["secondaryText"]."', tb.description = '".$data["tertiaryText"]."'
+            WHERE tb.id = ".$data["id"];
+    }
     $result = mysqli_query($connect, $sql);
 
     if (mysqli_query($connect, $sql)) {

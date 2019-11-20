@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { mergeStyleSets, getFocusStyle, ITheme, getTheme } from 'office-ui-fabric-react/lib/Styling';
-import { Icon, Spinner } from 'office-ui-fabric-react';
+import { Icon, Spinner, DefaultButton, PrimaryButton, format } from 'office-ui-fabric-react';
 import { MioListItemAction, MioListItemActionProps } from './mioListItemAction';
 import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
-import { classnames } from './Helper';
+import { classnames, fetchdata, urlInfo, mapItems, mapActions, urlUpdate } from './Helper';
 import { MioActionType } from './mioAction';
 import { MioTextfield } from './mioTextfield';
 import { openPage } from './mioEditor';
@@ -21,13 +21,14 @@ export interface MioListItemProps {
     actions: MioListItemActionProps[];
     items: MioListItemProps[];
 
-    onChange: () => void;
+    onChange?: (item: MioListItemProps) => void;
 
     //onEdit: (item: MioListItem) => void;
     // onChange?: (item: MioListItemChange) => void;
-    // onSubItemChange?: () => void;
-    edit: boolean;
+    //onSubItemChange?: () => void;
+    edit?: boolean;
     expanded?: boolean;
+    changed?: boolean;
 }
 
 export interface MioListItemState {
@@ -41,6 +42,7 @@ export interface MioListItemState {
     actions: MioListItemActionProps[];
     items: MioListItemProps[];
     expanded: boolean;
+    changed: boolean;
     // loading: number;
     // error: string;
     // edit: boolean;
@@ -79,6 +81,7 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
             actions: props.actions,
             items: props.items,
             expanded: props.expanded || false,
+            changed: props.changed || false,
             // loading: 2,
             // error: undefined,
             // edit: props.edit,
@@ -89,6 +92,7 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
         this.renderLeftStack = this.renderLeftStack.bind(this);
         this.renderMiddleStack = this.renderMiddleStack.bind(this);
         this.renderRightStack = this.renderRightStack.bind(this);
+        this.renderEditStack = this.renderEditStack.bind(this);
         this.renderSubItems = this.renderSubItems.bind(this);
         this.renderItem = this.renderItem.bind(this);
         this.renderProgress = this.renderProgress.bind(this);
@@ -98,6 +102,8 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
         this.onTextfieldChange = this.onTextfieldChange.bind(this);
         //this.onSubChange = this.onSubChange.bind(this);
         this.onSubItemChange = this.onSubItemChange.bind(this);
+        // this.update = this.update.bind(this);
+        this.onClickCancel = this.onClickCancel.bind(this);
     }
 
     // componentWillReceiveProps(props: MioListItemProps) {
@@ -202,6 +208,13 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
         </div>);
     }
 
+    renderEditStack(): JSX.Element {
+        return (<div className={styles.editStack}>
+            <PrimaryButton onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => this.onClickSave(event)}>Save</PrimaryButton>
+            <DefaultButton onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => this.onClickCancel(event)}>Cancel</DefaultButton>
+        </div>);
+    }
+
     renderRightStack(): JSX.Element {
         return (<div className={styles.rightStack}>
             {this.state.actions != undefined && this.state.actions.length > 0 && !this.props.edit ?
@@ -214,6 +227,7 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
                     )} */}
                 </div>
             : null}
+            {this.state.changed ? this.renderEditStack() : null}
             {this.props.metaText ? <MioTextfield onChange={null}
                 className={'metaText'} text={this.props.metaText} edit={false} /> : null}
         </div>);
@@ -223,9 +237,9 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
         return (this.state.expanded && this.props.items.length > 0 ?
             <div className={styles.itemStack}>
                 {this.state.items != undefined && this.state.items.map<JSX.Element>((item: MioListItemProps, index: number) =>
-                    <MioListItem id={item.id} key={index} expanded={this.props.edit} primaryText={item.primaryText} 
+                    <MioListItem id={item.id} key={index} expanded={this.props.edit} primaryText={item.primaryText} changed={item.changed}
                         //onChange={this.props.onChange != undefined ? this.props.onChange(item) : function() {}}
-                        onChange={this.onSubItemChange}
+                        onChange={(item: MioListItemProps) => this.onSubItemChange(index, item)}
                         edit={this.props.edit}  icon={item.icon} secondaryText={item.secondaryText} //onEdit={(item: MioListItem) => this.onEdit(item)}
                         tertiaryText={item.tertiaryText} metaText={item.metaText} items={item.items} actions={item.actions} />
                 )}
@@ -258,6 +272,43 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
     // ███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║   ███████║
     // ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
 
+    onClickSave(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+        const that = this;
+        fetchdata(format(urlUpdate, JSON.stringify(that.toProps())), function() {
+            //that.props.onChange(that.toProps());
+            console.log('Saved succesfully!');
+        }, function() {
+
+        }, function() {
+
+        });
+        event.stopPropagation();
+    }
+
+    onClickCancel(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+        const that = this;
+        fetchdata(format(urlInfo, that.props.id), function(data: any) {
+            that.setState({
+                icon: data[0].icon,
+                primaryText: data[0].name,
+                secondaryText: data[0].text,
+                tertiaryText: data[0].description,
+                items: mapItems(data[0].items),
+                actions: mapActions(data[0].actions),
+                changed: false,
+            }, 
+            function() { 
+                console.log('props ', that.toProps());
+                that.props.onChange(that.toProps());
+            });
+        }, function() {
+
+        }, function() {
+
+        });
+        event.stopPropagation();
+    }
+
     onClick(): void {
         if (this.props.items.length > 0) { this.setState({expanded: !this.state.expanded}); }
     }
@@ -274,8 +325,31 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
         
     // }
 
-    onSubItemChange() {
-        this.props.onChange();
+    // update() {
+    //     this.setState({changed: true},
+    //     function() { this.props.onChange(this.toProps()); });
+    // }
+
+    toProps(): MioListItemProps {
+        return {
+            id: this.props.id,
+            icon: this.state.icon,
+            primaryText: this.state.primaryText,
+            secondaryText: this.state.secondaryText,
+            tertiaryText: this.state.tertiaryText,
+            metaText: this.props.metaText,
+            actions: this.state.actions,
+            items: this.state.items,
+            expanded: this.state.expanded,
+            changed: this.state.changed,
+        };
+    }
+
+    onSubItemChange(index: number, item: MioListItemProps) {
+        var items = this.state.items;
+        items[index] = item;
+        this.setState({items: items},
+        function() { this.props.onChange(this.toProps()); });
     }
     //     if (this.props.onSubItemChange != undefined) {
     //         this.props.onSubItemChange();
@@ -285,15 +359,21 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
     // }
 
     onTextfieldChange(name: string, newValue: string) {
+        var newState = {};
         switch (name) {
             case 'primaryText':
-                this.setState({primaryText: newValue}); break;
+                newState = {primaryText: newValue, changed: true}; break;
             case 'secondaryText':
-                this.setState({secondaryText: newValue}); break;
+                newState = {secondaryText: newValue, changed: true}; break;
             case 'tertiaryText':
-                this.setState({tertiaryText: newValue}); break;
+                newState = {tertiaryText: newValue, changed: true}; break;
         }
-        this.props.onChange();
+        // var key = name,
+        //     state = {[key]: newValue};
+        this.setState(newState,
+        function() { this.props.onChange(this.toProps()); });
+        
+        //this.onSubItemChange();
     }
 
     //     //var state = {[name]: newValue};
@@ -354,6 +434,7 @@ export interface MioListItemClasses {
     leftStack: string;
     middleStack: string;
     rightStack: string;
+    editStack: string;
     actionStack: string;
     itemStack: string;
 }
@@ -427,6 +508,10 @@ const styles: MioListItemClasses = mergeStyleSets({
         overflow: 'hidden',
     },
     rightStack: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    editStack: {
         display: 'flex',
         flexDirection: 'column',
     },

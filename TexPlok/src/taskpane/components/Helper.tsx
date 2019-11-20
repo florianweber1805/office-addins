@@ -1,10 +1,13 @@
 import "isomorphic-fetch"
+import { MioListItemActionProps } from "./mioListItemAction";
+import { MioListItemProps } from "./mioListItem";
 
 export const urlDefault = 'https://addin.eap4.me/load.php';
 export const urlInfo = urlDefault + '?i={0}';
-export const urlChildren = urlDefault + '?t={0}';
-export const urlAction = urlDefault + '?a={0}';
-export const urlActionInfo = urlDefault + '?ai={0}';
+export const urlUpdate = urlDefault + '?u={0}';
+// export const urlChildren = urlDefault + '?t={0}';
+// export const urlAction = urlDefault + '?a={0}';
+// export const urlActionInfo = urlDefault + '?ai={0}';
 
 export const mioLogo = 'https://www.kjh-mio.de/s/misc/logo.jpg?t=1573588989';
 
@@ -17,7 +20,7 @@ export function classnames(classes: string[]): string {
 }
 
 export function fetchdata(url: string, successCallback, failCallback, errorCallback, logging = true) {
-    console.log('Request from "' + url + '" started...');
+    if (logging) { console.log('Request from "' + url + '" started...'); }
     fetch(url)
     .then(response => response.json())
     .then(function(data) {
@@ -28,7 +31,7 @@ export function fetchdata(url: string, successCallback, failCallback, errorCallb
         failCallback(reason);
     })
     .catch(function(error) {
-        console.error('Error: "' + error + '"');
+        if (logging) { console.error('Error: "' + error + '"'); }
         errorCallback(error);
     });
 }
@@ -51,4 +54,24 @@ export function GetURLParameter(sParam)
 export function openEditorWindow(id: number) {
     var strWindowFeatures = "location=no, height=" + screen.height + ", width=" + screen.width + ", scrollbars=no, status=no";
     window.open('https://addin.eap4.me/taskpane.html?edit=' + id, '_blank', strWindowFeatures);
+}
+
+export function mapActions(data: any): MioListItemActionProps[] {
+    return data.map((obj: any) => { return {
+        action: obj.action,
+        text: obj.name,
+        icon: obj.icon,
+    }; })
+}
+export function mapItems(data: any): MioListItemProps[] {
+    return data.map((obj: any) => { return {
+        id: obj.id, 
+        icon: obj.icon, 
+        primaryText: obj.name, 
+        secondaryText: obj.text,
+        tertiaryText: obj.description, 
+        metaText: obj.timestamp,
+        items: mapItems(obj.items),
+        actions: mapActions(obj.actions),
+    }; })
 }
