@@ -69,7 +69,7 @@ export class MioTextfield extends React.Component<MioTextfieldProps, MioTextfiel
             //     <iframe src={'https://view.officeapps.live.com/op/embed.aspx?src=@Url.Action("docx-file-URL")'} style={{width:'100%', height:'auto'}} />
             // :
                 <TextField className={styles.textfield} //inputClassName={classnames([this.state.className, this.className(), styles.edit])} 
-                    value={this.state.text} multiline={true} autoAdjustHeight={true} resizable={true} //this.state.text
+                    value={this.state.text} multiline={true} autoAdjustHeight={true} //resizable={true} //this.state.text
                     onClick={(event: React.MouseEvent<HTMLInputElement>) => this.onClick(event)}
                     onChange={(event: React.FormEvent<HTMLInputElement>, newValue: string) => this.onChange(event, newValue)}
                 />

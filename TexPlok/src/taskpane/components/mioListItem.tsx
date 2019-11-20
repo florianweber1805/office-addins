@@ -6,7 +6,7 @@ import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
 import { classnames, fetchdata, urlInfo, mapItems, mapActions, urlUpdate } from './Helper';
 import { MioActionType } from './mioAction';
 import { MioTextfield } from './mioTextfield';
-import { openPage } from './mioEditor';
+import { openPage } from './App';
 
 const theme: ITheme = getTheme();
 const { palette } = theme;
@@ -199,11 +199,11 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
 
     renderMiddleStack(): JSX.Element {
         return (<div className={styles.middleStack}>
-            {this.state.primaryText ? <MioTextfield onChange={(newValue) => this.onTextfieldChange('primaryText', newValue)}
+            {this.state.primaryText || this.props.edit ? <MioTextfield onChange={(newValue) => this.onTextfieldChange('primaryText', newValue)}
                 className={'primaryText'} text={this.state.primaryText} edit={this.props.edit} /> : null}
-            {this.state.secondaryText ? <MioTextfield onChange={(newValue) => this.onTextfieldChange('secondaryText', newValue)}
+            {this.state.secondaryText || this.props.edit ? <MioTextfield onChange={(newValue) => this.onTextfieldChange('secondaryText', newValue)}
                 className={'secondaryText'} text={this.state.secondaryText} edit={this.props.edit} /> : null}
-            {this.state.tertiaryText ? <MioTextfield onChange={(newValue) => this.onTextfieldChange('tertiaryText', newValue)}
+            {this.state.tertiaryText || this.props.edit ? <MioTextfield onChange={(newValue) => this.onTextfieldChange('tertiaryText', newValue)}
                 className={'tertiaryText'} text={this.state.tertiaryText} edit={this.props.edit} /> : null}
         </div>);
     }
@@ -237,7 +237,7 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
         return (this.state.expanded && this.props.items.length > 0 ?
             <div className={styles.itemStack}>
                 {this.state.items != undefined && this.state.items.map<JSX.Element>((item: MioListItemProps, index: number) =>
-                    <MioListItem id={item.id} key={index} expanded={this.props.edit} primaryText={item.primaryText} changed={item.changed}
+                    <MioListItem id={item.id} key={index} expanded={item.expanded} primaryText={item.primaryText} changed={item.changed}
                         //onChange={this.props.onChange != undefined ? this.props.onChange(item) : function() {}}
                         onChange={(item: MioListItemProps) => this.onSubItemChange(index, item)}
                         edit={this.props.edit}  icon={item.icon} secondaryText={item.secondaryText} //onEdit={(item: MioListItem) => this.onEdit(item)}
@@ -310,7 +310,10 @@ export class MioListItem extends React.Component<MioListItemProps, MioListItemSt
     }
 
     onClick(): void {
-        if (this.props.items.length > 0) { this.setState({expanded: !this.state.expanded}); }
+        if (this.state.items.length > 0) {
+            this.setState({expanded: !this.state.expanded},
+            function() { if (this.props.edit) { this.props.onChange(this.toProps()); } });
+        }
     }
 
     onAction(action: MioListItemAction): void {

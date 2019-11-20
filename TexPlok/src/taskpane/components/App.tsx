@@ -1,12 +1,13 @@
 import * as React from "react";
 import { MioList } from "./mioList";
-import { isOfficeInitialized } from "..";
-import { fetchdata, urlInfo, GetURLParameter, mapItems, mapActions } from './Helper';
+import { isOfficeInitialized, refresh } from "..";
+import { fetchdata, urlInfo, GetURLParameter, mapItems, mapActions, openEditorWindow } from './Helper';
 import { mergeStyleSets } from "@uifabric/styling";
-import { MioEditor, getPages, openPage } from "./mioEditor";
+import { MioEditor } from "./mioEditor";
 import { format } from "@uifabric/utilities";
 import SplitPane from "react-split-pane";
 import "./SplitPane.css";
+import { MioListItemProps } from "./mioListItem";
 
 export interface AppProps {}
 export interface AppState {}
@@ -59,7 +60,7 @@ export class App extends React.Component<AppProps, AppState> {
     // ╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝
 
 	renderEditor(): JSX.Element {
-		return (<div className={styles.editor}><MioEditor pages={getPages()} /></div>);
+		return (<div className={styles.editor}><MioEditor /></div>);
 	}
 
 	renderList(): JSX.Element {
@@ -84,6 +85,55 @@ export class App extends React.Component<AppProps, AppState> {
     // ███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║   ███████║
     // ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
 
+}
+
+// ██████╗  █████╗ ████████╗ █████╗ 
+// ██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗
+// ██║  ██║███████║   ██║   ███████║
+// ██║  ██║██╔══██║   ██║   ██╔══██║
+// ██████╔╝██║  ██║   ██║   ██║  ██║
+// ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝
+
+export function setIndex(index: number) {
+    localStorage.setItem('editorIndex', (index || 0).toString()); //refresh();
+}
+export function getIndex(): number {
+    var index = Number(localStorage.getItem('editorIndex'));
+    return (!isNaN(index) ? index : 0);
+}
+export function setPages(pages: MioListItemProps[]) {
+    localStorage.setItem('editorPages', JSON.stringify(pages || [])); //refresh();
+}
+export function getPages(): MioListItemProps[] {
+    return JSON.parse(localStorage.getItem('editorPages')) || [];
+}
+export function updatePage(id: number, item: MioListItemProps) {
+    var pages = getPages(); pages[id] = item; setPages(pages); refresh();
+}
+export function resetPages() {
+    setPages([]); setIndex(0); refresh();
+}
+export function openPage(item: MioListItemProps) {
+    if (isOfficeInitialized) {
+        openEditorWindow(item.id);
+    } else {
+        var pages = getPages();
+        pages[pages.length] = item;
+        setPages(pages);
+        setIndex(pages.length-1);
+        refresh();
+    }
+}
+export function closePage(id: number) {
+    var index = getIndex();
+    var pages = getPages();
+    pages.splice(id, 1);
+    setPages(pages);
+    if (id < index) { index -= 1; }
+    if (index < 0) { index = 0;
+    } else if ( index >= pages.length) { index = pages.length-1; }
+    setIndex(index);
+    refresh();
 }
 
 // ███████╗████████╗██╗   ██╗██╗     ███████╗███████╗
