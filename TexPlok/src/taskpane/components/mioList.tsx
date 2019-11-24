@@ -52,7 +52,7 @@ export class MioList extends React.Component<MioListProps, MioListState> {
         });
         setTimeout(function () {
             that.setState({delay: false});
-        }, 500);
+        }, 10);
     }
 
     // ██████╗ ███████╗███╗   ██╗██████╗ ███████╗██████╗ 

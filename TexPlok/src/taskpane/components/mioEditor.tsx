@@ -18,7 +18,9 @@ console.log(palette);
 export interface MioEditorProps {
     //pages: MioListItemProps[];
 }
-export interface MioEditorState {}
+export interface MioEditorState {
+    
+}
 
 export class MioEditor extends React.Component<MioEditorProps, MioEditorState> {
 
